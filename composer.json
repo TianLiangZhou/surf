@@ -1,7 +1,7 @@
 {
   "name": "meshell/surf",
   "type": "framework",
-  "keywords": ["framework", "swoole", "swoole-framework"],
+  "keywords": ["framework", "micro", "swoole-framework", "micro-swoole-framework", "micro-swoole-api"],
   "license": "MIT",
   "authors": [
     {
