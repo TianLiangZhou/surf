@@ -1,5 +1,6 @@
 # Surf
 
+[![Build Status](https://travis-ci.org/TianLiangZhou/surf.svg?branch=master)](https://travis-ci.org/TianLiangZhou/surf)
 [![License](https://img.shields.io/badge/license-mit-blue.svg)](LICENSE)
 
 `surf` 是一个对[`Swoole`](https://github.com/swoole/swoole-src)扩展库的封装，它可以像传统`MVC`一样编写 __Http__,__Tcp__ 应用.
