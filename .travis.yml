@@ -4,7 +4,7 @@ php:
   - '7.2'
 
 before_script:
-  - pecl install swoole
+  - yes | pecl install swoole
   #- echo 'extension = "swoole.so"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - composer install
 
