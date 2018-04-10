@@ -8,7 +8,6 @@
 
 namespace Surf\Server\Tcp;
 
-
 use Surf\Collection\Collection;
 
 class ProtocolCollector extends Collection

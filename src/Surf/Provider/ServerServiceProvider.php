@@ -30,14 +30,14 @@ class ServerServiceProvider implements ServiceProviderInterface
     {
         // TODO: Implement register() method.
 
-        $pimple['server.config'] = function($pimple) {
+        $pimple['server.config'] = function ($pimple) {
             $config = $pimple['app.config'] ?? null;
             if ($config && is_string($config) && is_file($config)) {
                 $config = require $config;
             }
             return $config ?? [];
         };
-        $pimple['server'] = function($pimple) {
+        $pimple['server'] = function ($pimple) {
             /**
              * @var $pimple Application
              */

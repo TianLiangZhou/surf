@@ -8,7 +8,6 @@
 
 namespace Surf\Provider;
 
-
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Surf\Application;
@@ -30,7 +29,7 @@ class PoolServiceProvider implements ServiceProviderInterface
     {
         // TODO: Implement register() method.
 
-        $pimple['pool'] = function($pimple) {
+        $pimple['pool'] = function ($pimple) {
             /**
              * @var $pimple Application
              */

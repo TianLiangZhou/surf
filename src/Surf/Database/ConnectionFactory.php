@@ -12,7 +12,6 @@ use Surf\Database\Connections\MysqlConnection;
 use PDO;
 use PDOException;
 
-
 class ConnectionFactory
 {
     /**
@@ -36,7 +35,14 @@ class ConnectionFactory
     protected function createSingleConnection(array $config, $name)
     {
         $pdoConnection = $this->getPdoResolver($config);
-        return $this->createConnection($config['driver'], $pdoConnection, $config['database'], $config, $config['prefix'] ?? '', $name);
+        return $this->createConnection(
+            $config['driver'],
+            $pdoConnection,
+            $config['database'],
+            $config,
+            $config['prefix'] ?? '',
+            $name
+        );
     }
 
     /**
@@ -48,8 +54,14 @@ class ConnectionFactory
      * @param string $name
      * @return null|MysqlConnection
      */
-    protected function createConnection(string $driver, callable $pdo, string $database, array $config, string $prefix = '', string $name = 'default')
-    {
+    protected function createConnection(
+        string $driver,
+        callable $pdo,
+        string $database,
+        array $config,
+        string $prefix = '',
+        string $name = 'default'
+    ) {
         $connection = null;
         switch ($driver) {
             case 'mysql':
@@ -65,10 +77,10 @@ class ConnectionFactory
      */
     protected function getPdoResolver(array $config)
     {
-        return function() use ($config) {
-
+        return function () use ($config) {
             $dns = $config['driver'] . ':dbname=' . $config['database'] . ';' .
-                (isset($config['socket'])
+                (
+                    isset($config['socket'])
                     ? 'unix_socket=' . $config['socket']
                     : 'host=' . $config['host']
                 );

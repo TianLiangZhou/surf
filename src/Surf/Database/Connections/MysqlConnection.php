@@ -12,5 +12,4 @@ use Surf\Database\Connection;
 
 class MysqlConnection extends Connection
 {
-
 }

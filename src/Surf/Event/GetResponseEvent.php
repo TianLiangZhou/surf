@@ -13,7 +13,6 @@ use Symfony\Component\EventDispatcher\Event;
 
 class GetResponseEvent extends Event
 {
-
     protected $response = null;
 
     protected $request = null;

@@ -8,7 +8,6 @@
 
 namespace Surf\Database;
 
-
 use Pimple\Psr11\Container;
 
 class DatabaseManager
@@ -86,7 +85,7 @@ class DatabaseManager
      */
     protected function configure(Connection $connection)
     {
-        $connection->setReconnectResolver(function(Connection $connection) {
+        $connection->setReconnectResolver(function (Connection $connection) {
             return $this->reconnect($connection->getName());
         });
         return $connection;

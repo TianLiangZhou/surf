@@ -21,7 +21,8 @@ class HttpServer extends Server
     {
         // TODO: Implement bootstrap() method.
         $this->server = new SwooleHttpServer(
-            $this->defaultConfig['host'], $this->defaultConfig['port']
+            $this->defaultConfig['host'],
+            $this->defaultConfig['port']
         );
     }
 

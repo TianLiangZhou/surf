@@ -16,12 +16,12 @@ use Swoole\WebSocket\Server as SwooleWebSocketServer;
 
 class WebSocketServer extends Server
 {
-
     protected function init()
     {
         // TODO: Implement bootstrap() method.
         $this->server = new SwooleWebSocketServer(
-            $this->defaultConfig['host'], $this->defaultConfig['port']
+            $this->defaultConfig['host'],
+            $this->defaultConfig['port']
         );
     }
 
@@ -40,7 +40,6 @@ class WebSocketServer extends Server
      */
     public function open(SwooleWebSocketServer $server, Request $request)
     {
-
     }
 
     /**
@@ -49,7 +48,6 @@ class WebSocketServer extends Server
      */
     public function message(SwooleWebSocketServer $server, Frame $frame)
     {
-
     }
 
     /**

@@ -16,7 +16,5 @@ $config['protocol'] = \Surf\Server\Tcp\Protocol\JsonProtocol::class;
 $app = new \Surf\Application(__DIR__, [
     'app.config' => $config
 ]);
-$app->addProtocol('user.name', Examples\TestTcpController::class . ':name');
+$app->addProtocol('user.name', Surf\Examples\TestTcpController::class . ':name');
 $app->run();
-
-

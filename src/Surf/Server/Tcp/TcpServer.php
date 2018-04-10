@@ -8,7 +8,6 @@
 
 namespace Surf\Server\Tcp;
 
-
 use Surf\Server\Server;
 use Swoole\Server as SwooleServer;
 
@@ -32,7 +31,8 @@ class TcpServer extends Server
     {
         // TODO: Implement bootstrap() method.
         $this->server = new SwooleServer(
-            $this->defaultConfig['host'], $this->defaultConfig['port']
+            $this->defaultConfig['host'],
+            $this->defaultConfig['port']
         );
     }
 
@@ -72,7 +72,8 @@ class TcpServer extends Server
                 if (is_callable($protocol)) {
                     $callback = $protocol;
                 } else {
-                    $class = $protocol; $action = 'index';
+                    $class = $protocol;
+                    $action = 'index';
                     if (strpos($protocol, ':') !== false) {
                         list($class, $action) = explode(':', $protocol);
                     }

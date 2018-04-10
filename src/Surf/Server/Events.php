@@ -8,7 +8,6 @@
 
 namespace Surf\Server;
 
-
 /**
  * Class Events
  * @package Surf\Server

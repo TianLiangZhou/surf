@@ -8,7 +8,6 @@
 
 namespace Surf\Server;
 
-
 use Pimple\Psr11\Container;
 use Surf\Pool\PoolManager;
 use Swoole\Server as SwooleServer;
@@ -66,31 +65,31 @@ abstract class Server
     /**
      * @return mixed
      */
-    protected abstract function init();
+    abstract protected function init();
 
     /**
      * @return mixed
      */
-    protected abstract function listen();
+    abstract protected function listen();
 
     /**
      * @param SwooleServer $server
      * @return mixed
      */
-    protected abstract function start(\Swoole\Server $server);
+    abstract protected function start(\Swoole\Server $server);
 
     /**
      * @param SwooleServer $server
      * @param int $workerId
      * @return mixed
      */
-    protected abstract function workerStart(\Swoole\Server $server, int $workerId);
+    abstract protected function workerStart(\Swoole\Server $server, int $workerId);
 
     /**
      * @param SwooleServer $server
      * @return mixed
      */
-    protected abstract function managerStart(\Swoole\Server $server);
+    abstract protected function managerStart(\Swoole\Server $server);
 
     /**
      *
@@ -113,7 +112,6 @@ abstract class Server
      */
     public function onManagerStart(\Swoole\Server $server)
     {
-
         $this->managerStart($server);
     }
     /**
@@ -142,7 +140,6 @@ abstract class Server
      */
     public function task(\Swoole\Server $server, int $taskId, int $workerId, $data)
     {
-
     }
 
     /**
@@ -152,7 +149,6 @@ abstract class Server
      */
     public function finish(\Swoole\Server $server, int $taskId, $data)
     {
-
     }
 
     /**
@@ -162,7 +158,6 @@ abstract class Server
      */
     public function connect(SwooleServer $server, int $fd, int $reactorId)
     {
-
     }
 
     /**
@@ -172,6 +167,5 @@ abstract class Server
      */
     public function close(SwooleServer $server, int $fd, int $reactorId)
     {
-
     }
 }

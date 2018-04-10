@@ -11,5 +11,4 @@ use Surf\Mvc\Controller;
 
 class TcpController extends Controller
 {
-
 }

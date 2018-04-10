@@ -9,8 +9,6 @@ namespace Surf\Pool\Connections;
 
 use Surf\Pool\Connection;
 
-
-
 class DatabaseConnectionPool extends Connection
 {
 

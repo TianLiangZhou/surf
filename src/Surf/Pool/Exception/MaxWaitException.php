@@ -8,10 +8,8 @@
 
 namespace Surf\Pool\Exception;
 
-
 use Exception;
 
 class MaxWaitException extends Exception
 {
-
 }

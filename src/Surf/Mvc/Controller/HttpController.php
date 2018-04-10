@@ -12,5 +12,4 @@ use Surf\Mvc\Controller;
 
 class HttpController extends Controller
 {
-
 }

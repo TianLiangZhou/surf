@@ -8,7 +8,6 @@
 
 namespace Surf\Server\Tcp;
 
-
 /**
  * Interface ProtocolInterface
  * @package Surf\Server\Tcp

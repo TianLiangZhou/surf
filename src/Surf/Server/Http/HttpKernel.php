@@ -62,10 +62,8 @@ class HttpKernel
             $response->status(500);
         }
         if ($finishResponse instanceof SlimResponse) {
-
         }
         if ($finishResponse instanceof ZendResponse) {
-
         }
         $response->header('Content-Type', 'text/html; charset=UTF-8');
         $response->end($finishResponse);
@@ -100,8 +98,11 @@ class HttpKernel
             }
         } else {
             $vars = $attributes['_vars'] ?? [];
-            if (!is_array($vars)) $vars = [$request, $vars];
-            else array_unshift($vars, $request);
+            if (!is_array($vars)) {
+                $vars = [$request, $vars];
+            } else {
+                array_unshift($vars, $request);
+            }
             if (is_callable($attributes['_controller'])) {
                 $callback = $attributes['_controller'];
             } else {

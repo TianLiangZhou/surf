@@ -6,7 +6,7 @@
  * Time: 18:22
  */
 
-namespace Examples;
+namespace Surf\Examples;
 
 use Surf\Mvc\Controller\HttpController;
 use Surf\Pool\PoolManager;

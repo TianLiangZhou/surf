@@ -8,7 +8,6 @@
 
 namespace Surf\Provider;
 
-
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std;
 use FastRoute\DataGenerator\GroupCountBased;
@@ -39,7 +38,7 @@ class RouterServiceProvider implements ServiceProviderInterface, EventListenerPr
          * @param $pimple
          * @return RouteCollector
          */
-        $pimple['router'] = function($pimple) {
+        $pimple['router'] = function ($pimple) {
             return new RouteCollector(new Std(), new GroupCountBased());
         };
 
@@ -47,7 +46,7 @@ class RouterServiceProvider implements ServiceProviderInterface, EventListenerPr
          * @param $pimple
          * @return ProtocolCollector
          */
-        $pimple['tcp_router'] = function($pimple) {
+        $pimple['tcp_router'] = function ($pimple) {
             return new ProtocolCollector();
         };
     }
@@ -60,7 +59,9 @@ class RouterServiceProvider implements ServiceProviderInterface, EventListenerPr
     {
         // TODO: Implement subscribe() method.
         $dispatcher->addSubscriber(new RouterListener(
-            $app['router'], null, $app['server.config']['document_root'] ?? Application::$basePath
+            $app['router'],
+            null,
+            $app['server.config']['document_root'] ?? Application::$basePath
         ));
     }
 }

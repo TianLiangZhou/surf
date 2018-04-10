@@ -8,7 +8,6 @@
 
 namespace Surf\Provider;
 
-
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Surf\Application;
@@ -30,7 +29,7 @@ class DatabaseServiceProvider implements ServiceProviderInterface
     {
         // TODO: Implement register() method.
 
-        $pimple['database.manager'] = function($pimple) {
+        $pimple['database.manager'] = function ($pimple) {
             /**
              * @var $pimple Application
              */

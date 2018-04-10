@@ -12,7 +12,6 @@ use Pimple\Psr11\Container;
 
 class CacheManager
 {
-
     protected $container = null;
 
     public function __construct(Container $container)
@@ -22,11 +21,9 @@ class CacheManager
 
     public function connection($name)
     {
-
     }
 
     public function factory($name)
     {
-
     }
 }

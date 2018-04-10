@@ -55,10 +55,10 @@ class RouterListener implements EventSubscriberInterface
             switch ($routeInfo[0]) {
                 case Dispatcher::NOT_FOUND:
                     $message = sprintf(
-                            'No route found for "%s %s"',
-                            $request->server['request_method'],
-                            $request->server['path_info']
-                        );
+                        'No route found for "%s %s"',
+                        $request->server['request_method'],
+                        $request->server['path_info']
+                    );
                     throw new NotFoundHttpException($message);
                     break;
                 case Dispatcher::METHOD_NOT_ALLOWED:
@@ -77,13 +77,14 @@ class RouterListener implements EventSubscriberInterface
                     break;
             }
         } else {
-            $file = rtrim($this->documentRoot, '/\\') . DIRECTORY_SEPARATOR . ltrim($request->server['path_info'], '/\\');
+            $file = rtrim($this->documentRoot, '/\\') . DIRECTORY_SEPARATOR
+                . ltrim($request->server['path_info'], '/\\');
             if (!file_exists($file)) {
                 $message = sprintf(
-                        'No file found for "%s %s"',
-                        $request->server['request_method'],
-                        $request->server['path_info']
-                    );
+                    'No file found for "%s %s"',
+                    $request->server['request_method'],
+                    $request->server['path_info']
+                );
                 throw new NotFoundHttpException($message);
             }
             $attributes['_file']       = true;

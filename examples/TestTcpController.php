@@ -6,11 +6,10 @@
  * Time: 9:59
  */
 
-namespace Examples;
+namespace Surf\Examples;
 
 class TestTcpController extends \Surf\Mvc\Controller\TcpController
 {
-
     public function name($body)
     {
         return "my name is " . $body['name'] .  ", my age is " . $body['age'] . ", My job is an " . $body['job'] ;

@@ -27,7 +27,6 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      */
     public function __construct(array $items = [])
     {
-
     }
 
     /**
@@ -136,7 +135,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     public function jsonSerialize()
     {
         // TODO: Implement jsonSerialize() method.
-        return array_map(function($value) {
+        return array_map(function ($value) {
             if ($value instanceof JsonSerializable) {
                 return $value->jsonSerialize();
             } else {

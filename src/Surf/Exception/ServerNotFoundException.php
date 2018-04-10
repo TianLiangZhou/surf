@@ -10,5 +10,4 @@ namespace Surf\Exception;
 
 class ServerNotFoundException extends \Exception
 {
-
 }

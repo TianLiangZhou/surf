@@ -8,7 +8,6 @@
 
 namespace Surf\Pool;
 
-
 abstract class Connection
 {
     /**
@@ -59,11 +58,11 @@ abstract class Connection
 
     /**
      * 回收对象
-     * @return mixed
+     * @return bool
      */
     public function close()
     {
-        $this->manager->recycling($this);
+        return $this->manager->recycling($this);
     }
 
     /**

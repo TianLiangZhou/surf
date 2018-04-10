@@ -8,7 +8,6 @@
 
 namespace Surf\Pool;
 
-
 use Pimple\Psr11\Container;
 use Surf\Cache\CacheManager;
 use Surf\Database\DatabaseManager;
@@ -93,7 +92,7 @@ class PoolManager
                 $startNumber= $configure['start_number'] ?? 1;
                 $maxNumber  = $configure['max_number'] ?? 20;
                 $maxWaitTime= $configure['max_wait_time'] ?? 1;
-                for($i = 1; $i < $startNumber; $i++) {
+                for ($i = 1; $i < $startNumber; $i++) {
                     $connections[] = $this->factory($namespace . '.' . $name);
                 }
                 $this->createPool($namespace . '.' . $name, $connections, $maxNumber, $maxWaitTime);
@@ -182,7 +181,7 @@ class PoolManager
         $this->pool[$name] = new Pool(null, $max, $maxWaitTime);
         foreach ($connections as $connection) {
             if ($connection instanceof Connection) {
-                $this->pool[$name]->push($connection);
+                $this->push($name, $connection);
             }
         }
         return $this;
@@ -268,7 +267,7 @@ class PoolManager
              * @var $pool Pool
              */
             $size = $pool->currentQuantity();
-            for($i = 0; $i < $size; $i++) {
+            for ($i = 0; $i < $size; $i++) {
                 $connection = $pool->pop();
                 if ($connection === null) {
                     continue;
@@ -286,6 +285,4 @@ class PoolManager
     {
         \swoole_timer_tick($this->interval, [$this, 'tickCallback']);
     }
-
-
 }

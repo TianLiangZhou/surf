@@ -93,7 +93,7 @@ abstract class Connection
      */
     public function cursor(string $query, array $bindings = [])
     {
-        $statement = $this->run($query, $bindings, function($query, array $bindings) {
+        $statement = $this->run($query, $bindings, function ($query, array $bindings) {
             $statement = $this->setFetchMode($this->getPdo()->prepare($query));
             $this->bindValues($statement, $bindings);
             $statement->execute();
@@ -112,7 +112,7 @@ abstract class Connection
      */
     public function fetchColumn(string $query, array $bindings = [])
     {
-        return $this->run($query, $bindings, function($query, array $bindings) {
+        return $this->run($query, $bindings, function ($query, array $bindings) {
             $statement = $this->setFetchMode($this->getPdo()->prepare($query));
             $this->bindValues($statement, $bindings);
             $statement->execute();
@@ -128,8 +128,7 @@ abstract class Connection
      */
     public function select(string $query, array $bindings = [])
     {
-        return $this->run($query, $bindings, function($query, array $bindings) {
-
+        return $this->run($query, $bindings, function ($query, array $bindings) {
             $statement = $this->setFetchMode($this->getPdo()->prepare($query));
 
             $this->bindValues($statement, $bindings);
@@ -147,7 +146,7 @@ abstract class Connection
      */
     public function statement(string $query, array $bindings = [])
     {
-        return $this->run($query, $bindings, function($query, array $bindings) {
+        return $this->run($query, $bindings, function ($query, array $bindings) {
             $statement = $this->getPdo()->prepare($query);
             $this->bindValues($statement, $bindings);
             return $statement->execute();
@@ -162,7 +161,7 @@ abstract class Connection
      */
     public function affectingStatement(string $query, array $bindings = [])
     {
-        return $this->run($query, $bindings, function($query, array $bindings) {
+        return $this->run($query, $bindings, function ($query, array $bindings) {
             $statement = $this->getPdo()->prepare($query);
             $this->bindValues($statement, $bindings);
             $statement->execute();
@@ -229,7 +228,7 @@ abstract class Connection
      * @param Closure $callback
      * @return mixed
      */
-protected function runQueryCallback($query, array $bindings, Closure $callback)
+    protected function runQueryCallback($query, array $bindings, Closure $callback)
     {
         try {
             $result = $callback($query, $bindings);

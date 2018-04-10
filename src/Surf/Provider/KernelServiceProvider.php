@@ -8,7 +8,6 @@
 
 namespace Surf\Provider;
 
-
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Surf\Application;
@@ -30,23 +29,21 @@ class KernelServiceProvider implements ServiceProviderInterface
     {
         // TODO: Implement register() method.
 
-        $pimple['dispatcher'] = function($pimple) {
-
+        $pimple['dispatcher'] = function ($pimple) {
             return new EventDispatcher();
         };
 
-        $pimple['http.kernel'] = function($pimple) {
+        $pimple['http.kernel'] = function ($pimple) {
             /**
              * @var $pimple Application
              */
             return new HttpKernel($pimple['dispatcher'], $pimple->getContainer());
         };
-        $pimple['tcp.kernel']  = function($pimple) {
-
+        $pimple['tcp.kernel']  = function ($pimple) {
             return null;
         };
 
-        $pimple['webSocket.kernel'] = function() {
+        $pimple['webSocket.kernel'] = function () {
             return null;
         };
     }
