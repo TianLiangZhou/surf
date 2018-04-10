@@ -17,7 +17,7 @@ use Swoole\WebSocket\Server as SwooleWebSocketServer;
 class WebSocketServer extends Server
 {
 
-    protected function bootstrap()
+    protected function init()
     {
         // TODO: Implement bootstrap() method.
         $this->server = new SwooleWebSocketServer(
@@ -29,12 +29,54 @@ class WebSocketServer extends Server
     {
         // TODO: Implement listen() method.
 
-        $this->server->on('open', function (SwooleWebSocketServer $server, Request $request) {
+        $this->server->on('open', [$this, 'open']);
 
-        });
+        $this->server->on('message', [$this, 'message']);
+    }
 
-        $this->server->on('message', function (SwooleServer $server, Frame $frame) {
+    /**
+     * @param SwooleWebSocketServer $server
+     * @param Request $request
+     */
+    public function open(SwooleWebSocketServer $server, Request $request)
+    {
 
-        });
+    }
+
+    /**
+     * @param SwooleWebSocketServer $server
+     * @param Frame $frame
+     */
+    public function message(SwooleWebSocketServer $server, Frame $frame)
+    {
+
+    }
+
+    /**
+     * @param SwooleServer $server
+     * @return mixed
+     */
+    protected function start(\Swoole\Server $server)
+    {
+        // TODO: Implement start() method.
+    }
+
+    /**
+     * @param SwooleServer $server
+     * @param int $workerId
+     * @return mixed
+     */
+    protected function workerStart(\Swoole\Server $server, int $workerId)
+    {
+        // TODO: Implement workerStart() method.
+    }
+
+    /**
+     * @param SwooleServer $server
+     * @return mixed
+     */
+    protected function managerStart(\Swoole\Server $server)
+    {
+        // TODO: Implement managerStart() method.
     }
 }

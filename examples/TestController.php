@@ -8,18 +8,11 @@
 
 namespace Examples;
 
-use Pimple\Psr11\Container;
+use Surf\Mvc\Controller\HttpController;
 use Surf\Pool\PoolManager;
 
-class TestController
+class TestController extends HttpController
 {
-    protected $container = null;
-
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
-
     public function index()
     {
         /**
@@ -33,7 +26,7 @@ class TestController
         $id = mt_rand(1, 10000);
         $range = range('A', 'Z');
         $suffix = $range[mt_rand(0, 25)];
-        $pdo->insert('insert into  `user` (`id`, `name`) VALUES ('. $id .', \'' . '小明' . $suffix . '\')');
+        //$pdo->insert('insert into  `user` (`id`, `name`) VALUES ('. $id .', \'' . '小明' . $suffix . '\')');
         $all = $pdo->select('SELECT * FROM `user`');
         $pdo->close();
 

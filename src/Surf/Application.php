@@ -118,10 +118,10 @@ class Application extends Container
 
     /**
      * @param string $pattern
-     * @param string $callback
+     * @param mixed $callback
      * @return $this
      */
-    public function addGet(string $pattern, string $callback)
+    public function addGet(string $pattern, $callback)
     {
         $this['router']->get($pattern, $callback);
         return $this;
@@ -129,10 +129,10 @@ class Application extends Container
 
     /**
      * @param string $pattern
-     * @param string $callback
+     * @param mixed $callback
      * @return $this
      */
-    public function addPost(string $pattern, string $callback)
+    public function addPost(string $pattern, $callback)
     {
         $this['router']->post($pattern, $callback);
         return $this;
@@ -140,10 +140,10 @@ class Application extends Container
 
     /**
      * @param string $pattern
-     * @param string $callback
+     * @param mixed $callback
      * @return $this
      */
-    public function addPut(string $pattern, string $callback)
+    public function addPut(string $pattern, $callback)
     {
         $this['router']->put($pattern, $callback);
         return $this;
@@ -151,10 +151,10 @@ class Application extends Container
 
     /**
      * @param string $pattern
-     * @param string $callback
+     * @param mixed $callback
      * @return $this
      */
-    public function addDelete(string $pattern, string $callback)
+    public function addDelete(string $pattern, $callback)
     {
         $this['router']->delete($pattern, $callback);
         return $this;
@@ -162,10 +162,10 @@ class Application extends Container
 
     /**
      * @param string $pattern
-     * @param string $callback
+     * @param mixed $callback
      * @return $this
      */
-    public function addPatch(string $pattern, string $callback)
+    public function addPatch(string $pattern, $callback)
     {
         $this['router']->patch($pattern, $callback);
         return $this;
@@ -173,15 +173,14 @@ class Application extends Container
 
     /**
      * @param string $pattern
-     * @param string $callback
+     * @param mixed $callback
      * @return $this
      */
-    public function addHead(string $pattern, string $callback)
+    public function addHead(string $pattern, $callback)
     {
         $this['router']->head($pattern, $callback);
         return $this;
     }
-
     /**
      * @param string $prefix
      * @param callable $callback
@@ -190,6 +189,29 @@ class Application extends Container
     public function addGroup(string $prefix, callable $callback)
     {
         $this['router']->addGroup($prefix, $callback);
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $callback
+     * @return $this
+     */
+    public function addProtocol(string $name, $callback)
+    {
+        $this['tcp_router']->add($name, $callback);
+        return $this;
+    }
+
+    /**
+     * @param string $prefix
+     * @param callback $callback
+     * @param string $join
+     * @return $this
+     */
+    public function addProtocolGroup(string $prefix, callable $callback)
+    {
+        $this['tcp_router']->addGroup($prefix, $callback);
         return $this;
     }
 
@@ -209,7 +231,7 @@ class Application extends Container
             if (empty($server)) {
                 throw new ServerNotFoundException('Not injected service');
             }
-            $server->start();
+            $server->run();
         }
     }
 }

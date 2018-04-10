@@ -255,12 +255,27 @@ class PoolManager
 
     /**
      *
+     * @throws MaxWaitException
      */
     public function tickCallback()
     {
         $count = count($this->pool);
         if ($count < 1) {
             return ;
+        }
+        foreach ($this->pool as $namespace => $pool) {
+            /**
+             * @var $pool Pool
+             */
+            $size = $pool->currentQuantity();
+            for($i = 0; $i < $size; $i++) {
+                $connection = $pool->pop();
+                if ($connection === null) {
+                    continue;
+                }
+                $connection->ping();
+                $connection->close(); //回收对象
+            }
         }
     }
 

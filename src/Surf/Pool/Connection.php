@@ -58,6 +58,7 @@ abstract class Connection
     }
 
     /**
+     * 回收对象
      * @return mixed
      */
     public function close()
@@ -73,7 +74,7 @@ abstract class Connection
         return $this->hashId;
     }
 
-
+    abstract public function ping();
     /**
      * @param $name
      * @param $arguments

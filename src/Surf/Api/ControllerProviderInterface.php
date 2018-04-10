@@ -14,20 +14,18 @@ namespace Surf\Api;
 use Surf\Application;
 
 /**
- * Interface for bootable service providers.
+ * Interface for controller providers.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-interface BootableProviderInterface
+interface ControllerProviderInterface
 {
     /**
-     * Bootstraps the application.
+     * Returns routes to connect to the given application.
      *
-     * This method is called after all services are registered
-     * and should be used for "dynamic" configuration (whenever
-     * a service must be requested).
+     * @param Application $app An Application instance
      *
-     * @param Application $app
+     * @return A ControllerCollection instance
      */
-    public function boot(Application $app);
+    public function connect(Application $app);
 }

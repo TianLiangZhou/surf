@@ -14,4 +14,12 @@ use Surf\Pool\Connection;
 class DatabaseConnectionPool extends Connection
 {
 
+    /**
+     *
+     */
+    public function ping()
+    {
+        // TODO: Implement ping() method.
+        $this->select('SELECT 1');
+    }
 }

@@ -10,6 +10,7 @@ return [
     'host' => '0.0.0.0',
     'port' => 9527,
     'setting' => [
+        //'dispatch_mode' => 3,
         'reactor_num' => 8,
         'worker_num' => 10,
         /**

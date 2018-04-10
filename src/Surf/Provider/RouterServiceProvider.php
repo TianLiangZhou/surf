@@ -17,7 +17,7 @@ use Pimple\ServiceProviderInterface;
 use Surf\Api\EventListenerProviderInterface;
 use Surf\Application;
 use Surf\Listeners\RouterListener;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Surf\Server\Tcp\ProtocolCollector;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class RouterServiceProvider implements ServiceProviderInterface, EventListenerProviderInterface
@@ -35,10 +35,21 @@ class RouterServiceProvider implements ServiceProviderInterface, EventListenerPr
     {
         // TODO: Implement register() method.
 
+        /**
+         * @param $pimple
+         * @return RouteCollector
+         */
         $pimple['router'] = function($pimple) {
             return new RouteCollector(new Std(), new GroupCountBased());
         };
 
+        /**
+         * @param $pimple
+         * @return ProtocolCollector
+         */
+        $pimple['tcp_router'] = function($pimple) {
+            return new ProtocolCollector();
+        };
     }
 
     /**

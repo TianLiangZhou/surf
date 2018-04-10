@@ -14,4 +14,8 @@ use Surf\Pool\Connection;
 class CacheConnectionPool extends Connection
 {
 
+    public function ping()
+    {
+        // TODO: Implement ping() method.
+    }
 }

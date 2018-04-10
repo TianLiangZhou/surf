@@ -32,7 +32,7 @@ class ServerServiceProvider implements ServiceProviderInterface
 
         $pimple['server.config'] = function($pimple) {
             $config = $pimple['app.config'] ?? null;
-            if ($config && is_file($config)) {
+            if ($config && is_string($config) && is_file($config)) {
                 $config = require $config;
             }
             return $config ?? [];

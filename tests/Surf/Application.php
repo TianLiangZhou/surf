@@ -209,7 +209,7 @@ class Application extends Container
             if (empty($server)) {
                 throw new ServerNotFoundException('Not injected service');
             }
-            $server->start();
+            $server->run();
         }
     }
 }

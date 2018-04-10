@@ -11,11 +11,12 @@ namespace Surf\Server;
 
 use Pimple\Psr11\Container;
 use Surf\Pool\PoolManager;
+use Swoole\Server as SwooleServer;
 
 abstract class Server
 {
     /**
-     * @var null
+     * @var null|SwooleServer
      */
     protected $server = null;
 
@@ -44,53 +45,133 @@ abstract class Server
     {
         $this->container = $container;
         $this->defaultConfig = array_merge($this->defaultConfig, $config);
+        $this->init();
         $this->bootstrap();
-        $this->initListen();
+    }
+
+    /**
+     *
+     */
+    protected function bootstrap()
+    {
+        $this->server->set($this->defaultConfig['setting']);
+        $this->server->on('start', [$this, 'onStart']);
+        $this->server->on('managerStart', [$this, 'onManagerStart']);
+        $this->server->on('workerStart', [$this, 'onWorkerStart']);
+        $this->server->on('task', [$this, 'task']);
+        $this->server->on('finish', [$this, 'finish']);
+        $this->listen();
     }
 
     /**
      * @return mixed
      */
-    protected abstract function bootstrap();
+    protected abstract function init();
 
     /**
-     *
+     * @return mixed
      */
-    protected function initListen()
-    {
-        $this->server->on('start', function(\Swoole\Server $server) {
-
-        });
-        $this->server->on('managerStart', function(\Swoole\Server $server) {
-
-        });
-        $this->server->on('workerStart', function(\Swoole\Server $server, int $workerId) {
-            if ($workerId === 0) {
-                /**
-                 * @var $pool PoolManager|null
-                 */
-                $pool = $this->container->get('pool');
-                //$pool && $pool->tick();
-            }
-        });
-
-        $this->server->on('task', function(\Swoole\Server $server, int $taskId, int $workerId, $data) {
-
-        });
-
-        $this->server->on('finish', function(\Swoole\Server $server, int $taskId, $data) {
-
-        });
-        $this->listen();
-    }
-
     protected abstract function listen();
 
     /**
+     * @param SwooleServer $server
+     * @return mixed
+     */
+    protected abstract function start(\Swoole\Server $server);
+
+    /**
+     * @param SwooleServer $server
+     * @param int $workerId
+     * @return mixed
+     */
+    protected abstract function workerStart(\Swoole\Server $server, int $workerId);
+
+    /**
+     * @param SwooleServer $server
+     * @return mixed
+     */
+    protected abstract function managerStart(\Swoole\Server $server);
+
+    /**
      *
      */
-    public function start()
+    public function run()
     {
         $this->server->start();
+    }
+
+    /**
+     * @param SwooleServer $server
+     */
+    public function onStart(\Swoole\Server $server)
+    {
+        $this->start($server);
+    }
+
+    /**
+     * @param SwooleServer $server
+     */
+    public function onManagerStart(\Swoole\Server $server)
+    {
+
+        $this->managerStart($server);
+    }
+    /**
+     * @param SwooleServer $server
+     * @param int $workerId
+     */
+    public function onWorkerStart(\Swoole\Server $server, int $workerId)
+    {
+        if ($workerId === 0) {
+            /**
+             * @var $pool PoolManager|null
+             */
+            if ($this->container->has('pool')) {
+                $pool = $this->container->get('pool');
+                $pool && $pool->tick();
+            }
+        }
+        $this->workerStart($server, $workerId);
+    }
+
+    /**
+     * @param SwooleServer $server
+     * @param int $taskId
+     * @param int $workerId
+     * @param $data
+     */
+    public function task(\Swoole\Server $server, int $taskId, int $workerId, $data)
+    {
+
+    }
+
+    /**
+     * @param SwooleServer $server
+     * @param int $taskId
+     * @param $data
+     */
+    public function finish(\Swoole\Server $server, int $taskId, $data)
+    {
+
+    }
+
+    /**
+     * @param SwooleServer $server
+     * @param int $fd
+     * @param int $reactorId
+     */
+    public function connect(SwooleServer $server, int $fd, int $reactorId)
+    {
+
+    }
+
+    /**
+     * @param SwooleServer $server
+     * @param int $fd
+     * @param int $reactorId
+     */
+    public function close(SwooleServer $server, int $fd, int $reactorId)
+    {
+
     }
 }

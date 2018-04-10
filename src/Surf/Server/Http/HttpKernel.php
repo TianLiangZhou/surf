@@ -9,6 +9,8 @@
 namespace Surf\Server\Http;
 
 use Pimple\Psr11\Container;
+use Slim\Http\Response as SlimResponse;
+use Zend\Diactoros\Response as ZendResponse;
 use Surf\Event\GetResponseEvent;
 use Surf\Exception\MethodNotAllowedException;
 use Surf\Exception\NotFoundHttpException;
@@ -59,6 +61,12 @@ class HttpKernel
             $finishResponse = $e->getMessage();
             $response->status(500);
         }
+        if ($finishResponse instanceof SlimResponse) {
+
+        }
+        if ($finishResponse instanceof ZendResponse) {
+
+        }
         $response->header('Content-Type', 'text/html; charset=UTF-8');
         $response->end($finishResponse);
         return ;
@@ -91,28 +99,32 @@ class HttpKernel
                 $response = file_get_contents($attributes['_controller']);
             }
         } else {
-            list($controller, $method) = explode(':', $attributes['_controller']);
-            if (!class_exists($controller)) {
-                throw new \Exception("Can not find the controller '$controller'");
-            }
-            $hash = md5($controller);
-            if (isset($this->controllers[$hash])) {
-                $class = new $this->controllers[$hash];
-            } else {
-                $class = new $controller($this->container);
-            }
-            if (!method_exists($class, $method)) {
-                throw new \Exception("Can not find the controller method '$method'");
-            }
             $vars = $attributes['_vars'] ?? [];
             if (!is_array($vars)) $vars = [$request, $vars];
             else array_unshift($vars, $request);
+            if (is_callable($attributes['_controller'])) {
+                $callback = $attributes['_controller'];
+            } else {
+                list($controller, $method) = explode(':', $attributes['_controller']);
+                if (!class_exists($controller)) {
+                    throw new \Exception("Can not find the controller '$controller'");
+                }
+                $hash = md5($controller);
+                if (isset($this->controllers[$hash])) {
+                    $class = new $this->controllers[$hash];
+                } else {
+                    $class = new $controller($this->container);
+                }
+                if (!method_exists($class, $method)) {
+                    throw new \Exception("Can not find the controller method '$method'");
+                }
+                $callback = [$class, $method];
+            }
             try {
-                $response = call_user_func_array([$class, $method], $vars);
+                $response = call_user_func_array($callback, $vars);
             } catch (\Exception $e) {
                 throw $e;
             }
-            unset($class);
         }
         return $response;
     }
