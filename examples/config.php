@@ -67,10 +67,10 @@ return [
     'database' => [
         'default' => [
             'driver' => 'mysql',
-            'host'   => 'localhost',
+            'host'   => '127.0.0.1',
             'database' => 'test',
             'username' => 'root',
-            'password' => "123456",
+            'password' => "",
             'options'  => [],
         ],
     ],

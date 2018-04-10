@@ -3,6 +3,12 @@ php:
   - '7.1'
   - '7.2'
 
+services:
+  - mysql
+
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test;USE test;CREATE TABLE user (`id` int not null, `name` varchar(30) not null); INSERT INTO `user` (`id`, `name`) VALUES (1, "meshell");'
+
 before_script:
   - yes | pecl install swoole
   #- echo 'extension = "swoole.so"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
