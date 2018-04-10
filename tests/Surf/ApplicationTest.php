@@ -80,9 +80,11 @@ class ApplicationTest extends TestCase
 
     public function testPool()
     {
-
+        $config = require __DIR__ . '/../../examples/config.php';
+        $config['database']['default']['host'] = '127.0.0.1';
+        $config['database']['default']['password'] = '';
         $app = new Application(dirname(dirname(__DIR__)), [
-            'app.config' => require __DIR__ . '/../../examples/config.php'
+            'app.config' => $config
         ]);
         $app->register(new PoolServiceProvider());
 
@@ -95,9 +97,11 @@ class ApplicationTest extends TestCase
      */
     public function testPoolRecycle()
     {
-
+        $config = require __DIR__ . '/../../examples/config.php';
+        $config['database']['default']['host'] = '127.0.0.1';
+        $config['database']['default']['password'] = '';
         $app = new Application(dirname(dirname(__DIR__)), [
-            'app.config' => require __DIR__ . '/../../examples/config.php'
+            'app.config' => $config
         ]);
         $app->register(new PoolServiceProvider());
 
@@ -113,9 +117,11 @@ class ApplicationTest extends TestCase
      */
     public function testPoolQuery()
     {
-
+        $config = require __DIR__ . '/../../examples/config.php';
+        $config['database']['default']['host'] = '127.0.0.1';
+        $config['database']['default']['password'] = '';
         $app = new Application(dirname(dirname(__DIR__)), [
-            'app.config' => require __DIR__ . '/../../examples/config.php'
+            'app.config' => $config
         ]);
         $app->register(new PoolServiceProvider());
 
@@ -179,11 +185,19 @@ class ApplicationTest extends TestCase
      */
     public function testHttp()
     {
-        $this->expectException('Swoole\Exception');
-        $app = new Application();
-        $server = new HttpServer($app->getContainer());
-
-        $this->assertTrue($server instanceof HttpServer);
+        try {
+            $app = new Application();
+            $server = new HttpServer($app->getContainer(), [
+                'port' => 9527,
+                'setting' => [
+                    'daemonize' => 1
+                ],
+            ]);
+            $server->run();
+            $this->assertTrue($server instanceof HttpServer);
+        } catch (\Exception $e) {
+            $this->assertTrue($e instanceof \Swoole\Exception);
+        }
     }
 
     /**
@@ -191,10 +205,19 @@ class ApplicationTest extends TestCase
      */
     public function testTcp()
     {
-        $this->expectException('Swoole\Exception');
-        $app = new Application();
-        $server = new TcpServer($app->getContainer(), ['port' => 9537]);
-        $this->assertTrue($server instanceof TcpServer);
+        try {
+            $app = new Application();
+            $server = new TcpServer($app->getContainer(), [
+                'port' => 9537,
+                'setting' => [
+                    'daemonize' => 1
+                ],
+            ]);
+            $server->run();
+            $this->assertTrue($server instanceof TcpServer);
+        } catch (\Exception $e) {
+            $this->assertTrue($e instanceof \Swoole\Exception);
+        }
     }
 
     /**
@@ -202,10 +225,19 @@ class ApplicationTest extends TestCase
      */
     public function testWebSocket()
     {
-        $this->expectException('Swoole\Exception');
-        $app = new Application();
-        $server = new WebSocketServer($app->getContainer(), ['port' => 9547]);
-        $this->assertTrue($server instanceof WebSocketServer);
+        try {
+            $app = new Application();
+            $server = new WebSocketServer($app->getContainer(), [
+                'port' => 9547,
+                'setting' => [
+                    'daemonize' => 1
+                ],
+            ]);
+            $server->run();
+            $this->assertTrue($server instanceof WebSocketServer);
+        } catch (\Exception $e) {
+            $this->assertTrue($e instanceof \Swoole\Exception);
+        }
     }
 
     public function testHttpNotFoundException()
