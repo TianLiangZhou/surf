@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/TianLiangZhou/surf.svg?branch=master)](https://travis-ci.org/TianLiangZhou/surf)
 [![License](https://img.shields.io/badge/license-mit-blue.svg)](LICENSE)
+[![Coverage Status](https://coveralls.io/repos/github/TianLiangZhou/surf/badge.svg?branch=%28HEAD+detached+at+ab55c4e%29)](https://coveralls.io/github/TianLiangZhou/surf?branch=%28HEAD+detached+at+ab55c4e%29)
+[![Maintainability](https://api.codeclimate.com/v1/badges/5c492204dfcf4157fc8b/maintainability)](https://codeclimate.com/github/TianLiangZhou/surf/maintainability)
 
 `surf` 是一个对[`Swoole`](https://github.com/swoole/swoole-src)扩展库的封装，它可以像传统`MVC`一样编写 __Http__,__Tcp__ 应用.
 
