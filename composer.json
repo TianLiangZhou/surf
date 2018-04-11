@@ -22,7 +22,9 @@
     "friendsofphp/php-cs-fixer": "^2.3",
     "phpunit/phpunit": "^6.0.0",
     "squizlabs/php_codesniffer": "^2.5",
-    "eaglewu/swoole-ide-helper": "dev-master"
+    "eaglewu/swoole-ide-helper": "dev-master",
+    "php-coveralls/php-coveralls": "^2.0",
+    "phpunit/phpcov": "^2.0"
   },
   "autoload":{
     "psr-4": {

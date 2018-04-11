@@ -14,7 +14,9 @@ before_script:
   #- echo 'extension = "swoole.so"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - composer install
 
-script: phpunit --coverage-text
+script: phpunit --coverage-clover clover.xml
+
+after_success: vendor/bin/php-coveralls --coverage_clover=clover.xml
 
 notifications:
   email:
