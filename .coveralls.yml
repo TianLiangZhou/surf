@@ -1,2 +1,2 @@
-repo_token: 995QBBIyNIC2DB8C0JqGa9C4dDMNCB8QM
 json_path: coveralls-upload.json
+service_name: travis-ci
