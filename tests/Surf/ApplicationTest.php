@@ -58,7 +58,8 @@ class ApplicationTest extends TestCase
         $app = new Application();
 
         $path = '/test';
-        $app->addGet($path, function() {});
+        $app->addGet($path, function () {
+        });
         $routerData = $app['router']->getData();
         $this->assertArrayHasKey($path, $routerData[0]['GET']);
     }
@@ -81,8 +82,10 @@ class ApplicationTest extends TestCase
     public function testPool()
     {
         $config = require __DIR__ . '/../../examples/config.php';
-        $config['database']['default']['host'] = '127.0.0.1';
-        $config['database']['default']['password'] = '';
+        if (getenv('TRAVIS')) {
+            $config['database']['default']['host'] = '127.0.0.1';
+            $config['database']['default']['password'] = '';
+        }
         $app = new Application(dirname(dirname(__DIR__)), [
             'app.config' => $config
         ]);
@@ -98,8 +101,10 @@ class ApplicationTest extends TestCase
     public function testPoolRecycle()
     {
         $config = require __DIR__ . '/../../examples/config.php';
-        $config['database']['default']['host'] = '127.0.0.1';
-        $config['database']['default']['password'] = '';
+        if (getenv('TRAVIS')) {
+            $config['database']['default']['host'] = '127.0.0.1';
+            $config['database']['default']['password'] = '';
+        }
         $app = new Application(dirname(dirname(__DIR__)), [
             'app.config' => $config
         ]);
@@ -118,8 +123,10 @@ class ApplicationTest extends TestCase
     public function testPoolQuery()
     {
         $config = require __DIR__ . '/../../examples/config.php';
-        $config['database']['default']['host'] = '127.0.0.1';
-        $config['database']['default']['password'] = '';
+        if (getenv('TRAVIS')) {
+            $config['database']['default']['host'] = '127.0.0.1';
+            $config['database']['default']['password'] = '';
+        }
         $app = new Application(dirname(dirname(__DIR__)), [
             'app.config' => $config
         ]);
@@ -137,7 +144,7 @@ class ApplicationTest extends TestCase
         $app = new Application(dirname(dirname(__DIR__)), [
             'app.config' => require __DIR__ . '/../../examples/config.php'
         ]);
-        $app->addGet('/', function() {
+        $app->addGet('/', function () {
             return "Hello world";
         });
         $app->boot();
@@ -193,7 +200,7 @@ class ApplicationTest extends TestCase
                     'daemonize' => 1
                 ],
             ]);
-            $server->run();
+            //$server->run();
             $this->assertTrue($server instanceof HttpServer);
         } catch (\Exception $e) {
             $this->assertTrue($e instanceof \Swoole\Exception);
@@ -213,7 +220,7 @@ class ApplicationTest extends TestCase
                     'daemonize' => 1
                 ],
             ]);
-            $server->run();
+            //$server->run();
             $this->assertTrue($server instanceof TcpServer);
         } catch (\Exception $e) {
             $this->assertTrue($e instanceof \Swoole\Exception);
@@ -233,7 +240,7 @@ class ApplicationTest extends TestCase
                     'daemonize' => 1
                 ],
             ]);
-            $server->run();
+            //$server->run();
             $this->assertTrue($server instanceof WebSocketServer);
         } catch (\Exception $e) {
             $this->assertTrue($e instanceof \Swoole\Exception);
@@ -245,7 +252,7 @@ class ApplicationTest extends TestCase
         $app = new Application(dirname(dirname(__DIR__)), [
             'app.config' => require __DIR__ . '/../../examples/config.php'
         ]);
-        $app->addGet('/exception', function() {
+        $app->addGet('/exception', function () {
             return "Hello world";
         });
         $app->boot();
@@ -268,7 +275,7 @@ class ApplicationTest extends TestCase
         $app = new Application(dirname(dirname(__DIR__)), [
             'app.config' => require __DIR__ . '/../../examples/config.php'
         ]);
-        $app->addPost('/', function() {
+        $app->addPost('/', function () {
             return "Hello world";
         });
         $app->boot();

@@ -44,7 +44,7 @@
       "@phpunit",
       "@phpcs"
     ],
-    "phpunit": "vendor/bin/phpunit",
+    "phpunit": "vendor/bin/phpunit --coverage-clover clover.xml",
     "phpcs": "vendor/bin/phpcs",
     "fixer": "vendor/bin/php-cs-fixer fix ./src --rules=@PSR2"
   }
