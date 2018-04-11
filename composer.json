@@ -24,7 +24,7 @@
     "squizlabs/php_codesniffer": "^2.5",
     "eaglewu/swoole-ide-helper": "dev-master",
     "php-coveralls/php-coveralls": "^2.0",
-    "phpunit/phpcov": "^2.0"
+    "phpunit/phpcov": "^2.0.2"
   },
   "autoload":{
     "psr-4": {
