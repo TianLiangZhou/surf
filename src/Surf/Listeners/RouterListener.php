@@ -73,7 +73,7 @@ class RouterListener implements EventSubscriberInterface
                 case Dispatcher::FOUND:
                     $attributes['_file']       = false;
                     $attributes['_controller'] = $routeInfo[1];
-                    $attributes['_vars']       = $routeInfo[2];
+                    $attributes['_vars']       = isset($routeInfo[2]) && !empty($routeInfo[2]) ? $routeInfo[2] : [];
                     break;
             }
         } else {
@@ -89,7 +89,7 @@ class RouterListener implements EventSubscriberInterface
             }
             $attributes['_file']       = true;
             $attributes['_controller'] = $file;
-            $attributes['_vars']       = null;
+            $attributes['_vars']       = [];
         }
         $request->attributes = $attributes;
     }
