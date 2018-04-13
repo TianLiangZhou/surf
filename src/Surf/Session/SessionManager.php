@@ -9,6 +9,8 @@
 namespace Surf\Session;
 
 
+use Surf\Server\Http\Cookie\CookieAttributes;
+
 class SessionManager
 {
     /**
@@ -37,6 +39,22 @@ class SessionManager
     private $sessionId = null;
 
     /**
+     * @var string
+     */
+    private $name = 'SURF_SESSION_ID';
+
+
+    /**
+     * @var string
+     */
+    private $mode = 'cookie';
+
+    /**
+     * @var int
+     */
+    private $expire = 7200;
+
+    /**
      * SessionManager constructor.
      * @param DriverInterface $driver
      * @param array $options
@@ -50,6 +68,8 @@ class SessionManager
         $this->sessionId = $sessionId;
 
         $this->sessionStorage = new SessionStorage();
+
+        $this->setter();
     }
 
     /**
@@ -112,4 +132,68 @@ class SessionManager
     {
         return $this->sessionStorage->get($key);
     }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMode(): string
+    {
+        return $this->mode;
+    }
+
+    /**
+     * @param string $mode
+     */
+    public function setMode(string $mode): void
+    {
+        $this->mode = $mode;
+    }
+
+    /**
+     * @return int
+     */
+    public function getExpire(): int
+    {
+        return $this->expire;
+    }
+
+    /**
+     * @param int $expire
+     */
+    public function setExpire(int $expire): void
+    {
+        $this->expire = $expire;
+    }
+
+    /**
+     * @param array $options
+     */
+    private function setter()
+    {
+        $default = ['name', 'mode', 'expire'];
+
+        foreach ($default as $name) {
+            if (isset($this->options[$name])) {
+                $method = 'set' . ucfirst($name);
+                $this->$method($this->options[$name]);
+            }
+        }
+    }
+
 }

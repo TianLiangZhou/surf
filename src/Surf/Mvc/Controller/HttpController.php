@@ -9,6 +9,7 @@
 namespace Surf\Mvc\Controller;
 
 use Surf\Mvc\Controller;
+use Surf\Server\Http\Cookie\Cookies;
 use Swoole\Http\Request;
 
 class HttpController extends Controller
@@ -17,6 +18,12 @@ class HttpController extends Controller
      * @var Request
      */
     protected $request = null;
+
+
+    /**
+     * @var Cookies
+     */
+    protected $cookies = null;
 
     /**
      * @return null
@@ -32,5 +39,21 @@ class HttpController extends Controller
     public function setRequest(Request $request): void
     {
         $this->request = $request;
+    }
+
+    /**
+     * @return Cookies
+     */
+    public function getCookies(): Cookies
+    {
+        return $this->cookies;
+    }
+
+    /**
+     * @param Cookies $cookies
+     */
+    public function setCookies(Cookies $cookies): void
+    {
+        $this->cookies = $cookies;
     }
 }

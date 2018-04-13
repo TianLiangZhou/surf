@@ -61,7 +61,7 @@ class RouterServiceProvider implements ServiceProviderInterface, EventListenerPr
         $dispatcher->addSubscriber(new RouterListener(
             $app['router'],
             null,
-            $app['server.config']['document_root'] ?? Application::$basePath
+            $app['server.config']['setting']['document_root'] ?? Application::$basePath
         ));
     }
 }

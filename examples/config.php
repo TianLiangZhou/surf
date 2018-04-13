@@ -11,7 +11,7 @@ return [
     'port' => 9527,
     'setting' => [
         //'dispatch_mode' => 3,
-        'daemonize' => 1,
+        'daemonize' => 0,
         'reactor_num' => 8,
         'worker_num' => 10,
         /**

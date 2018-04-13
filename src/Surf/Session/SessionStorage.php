@@ -34,7 +34,7 @@ class SessionStorage extends Collection
     /**
      * @param array $items
      */
-    public function iterator(array $items)
+    public function iterator(\ArrayIterator $items)
     {
         foreach ($items as $key => $value) {
             $this->set($key, $value);

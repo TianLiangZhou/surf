@@ -9,7 +9,10 @@
 namespace Surf\Server\Http;
 
 use Pimple\Psr11\Container;
+use Psr\Http\Message\ResponseInterface;
 use Surf\Mvc\Controller\HttpController;
+use Surf\Server\Http\Cookie\CookieAttributes;
+use Surf\Server\Http\Cookie\Cookies;
 use Surf\Session\SessionManager;
 use Surf\Event\GetResponseEvent;
 use Surf\Exception\MethodNotAllowedException;
@@ -18,23 +21,25 @@ use Surf\Server\Events;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Zend\Diactoros\Response\HtmlResponse;
 
 class HttpKernel
 {
     /**
      * @var null|EventDispatcherInterface
      */
-    protected $dispatcher = null;
+    private $dispatcher = null;
 
     /**
      * @var null|Container
      */
-    protected $container = null;
+    private $container = null;
 
     /**
      * @var array
      */
-    protected $controllers = [];
+    private $controllers = [];
+
     /**
      * HttpKernel constructor.
      * @param EventDispatcherInterface $dispatcher
@@ -48,34 +53,57 @@ class HttpKernel
 
     /**
      * @param Request $request
-     * @param Response $response
+     * @param Response $sourceResponse
      */
-    public function handle(Request $request, Response $response)
+    public function handle(Request $request, Response $sourceResponse)
     {
+        $cookies = new Cookies($request->cookie ?? []);
         try {
-            $finishResponse = $this->handleResponse($request);
+            $response = $this->handleResponse($request, $cookies);
         } catch (NotFoundHttpException | MethodNotAllowedException $e) {
-            $finishResponse = $e->getMessage();
-            $response->status($e->getStatusCode());
+            $response = new HtmlResponse($e->getMessage(), $e->getStatusCode());
         } catch (\Exception $e) {
-            $finishResponse = $e->getMessage();
-            $response->status(500);
+            $response = new HtmlResponse($e->getMessage(), 500);
         }
-        if (class_exists('\Psr\Http\Message\ResponseInterface')
-            && $finishResponse instanceof \Psr\Http\Message\ResponseInterface) {
-        } else {
-            $response->header('Content-Type', 'text/html; charset=UTF-8');
+        $this->finishResponse($sourceResponse, $response, $cookies, $request->server['request_time']);
+        return true;
+    }
+
+    /**
+     * @param Response $sourceResponse
+     * @param ResponseInterface $response
+     * @param Cookies $cookies
+     * @param int $timestamps 当前请求时间
+     */
+    private function finishResponse(Response $sourceResponse, ResponseInterface $response, Cookies $cookies, int $timestamps)
+    {
+        foreach ($cookies->getResponseCookies() as $name => $cookieAttributes) {
+            /**
+             * @var $cookieAttributes CookieAttributes
+             */
+            $sourceResponse->cookie(
+                $name,
+                $cookieAttributes->getValue(),
+                $cookieAttributes->getExpire() + $timestamps,
+                $cookieAttributes->getPath(),
+                $cookieAttributes->getDomain(),
+                $cookieAttributes->isSecure(),
+                $cookieAttributes->isHttpOnly()
+            );
         }
-        $response->end($finishResponse);
-        return ;
+        foreach ($response->getHeaders() as $name => $value) {
+            $sourceResponse->header($name, implode(',', $value));
+        }
+        $sourceResponse->status($response->getStatusCode());
+        $sourceResponse->end((string) $response->getBody());
     }
 
     /**
      * @param Request $request
-     * @return string
+     * @return ResponseInterface
      * @throws \Exception
      */
-    private function handleResponse(Request $request)
+    private function handleResponse(Request $request, Cookies $cookies)
     {
         $this->registerSession($request);
         /**
@@ -83,23 +111,29 @@ class HttpKernel
          */
         $event = $this->dispatcher->dispatch(Events::REQUEST, new GetResponseEvent($request));
         if ($event->hasResponse()) {
-            return $event->getResponse();
-        }
-        $attributes = $request->attributes;
-        $response = null;
-        if ($attributes['_file']) {
-            $response = $this->getFileResponse($attributes['_controller'], $request);
+            $response = $event->getResponse();
         } else {
-            $response = $this->getControllerResponse($attributes, $request);
+            $attributes = $request->attributes;
+            $response = null;
+            if ($attributes['_file']) {
+                $response = $this->getFileResponse($attributes['_controller'], $request, $cookies);
+            } else {
+                $response = $this->getControllerResponse($attributes, $request, $cookies);
+            }
         }
-        return $response;
+        if (!($response instanceof ResponseInterface)) {
+            $response = new HtmlResponse($response);
+        }
+        return $this->registerSessionShutdown($request, $response, $cookies);
     }
 
     /**
-     * @param $file
-     * @return bool|string
+     * @param string $file
+     * @param Request $request
+     * @param Cookies $cookies
+     * @return string
      */
-    private function getFileResponse($file, Request $request)
+    private function getFileResponse(string $file, Request $request, Cookies $cookies)
     {
         $extension = pathinfo($file, PATHINFO_EXTENSION);
         if (strtolower($extension) == 'php') {
@@ -113,12 +147,13 @@ class HttpKernel
     }
 
     /**
-     * @param $attributes
+     * @param array $attributes
      * @param Request $request
-     * @return mixed|null
+     * @param Cookies $cookies
+     * @return mixed
      * @throws \Exception
      */
-    private function getControllerResponse($attributes, Request $request)
+    private function getControllerResponse(array $attributes, Request $request, Cookies $cookies)
     {
         if (is_callable($attributes['_controller'])) {
             $callback = $attributes['_controller'];
@@ -134,6 +169,7 @@ class HttpKernel
             }
             if ($class instanceof HttpController) {
                 $class->setRequest($request);
+                $class->setCookies($cookies);
             }
             if (!isset($this->controllers[$hash])) {
                 $this->controllers[$hash] = $class;
@@ -145,7 +181,10 @@ class HttpKernel
         }
         try {
             $response = call_user_func(
-                $callback, $attributes['_vars'], (is_array($callback) ? null : $request)
+                $callback,
+                $attributes['_vars'],
+                (is_array($callback) ? null : $request),
+                (is_array($callback) ? null : $cookies)
             );
         } catch (\Exception $e) {
             throw $e;
@@ -167,7 +206,7 @@ class HttpKernel
         $mode = $options['mode'] ?? 'cookie';
         if ($mode === 'header') {
             $sessionId = $request->header[$cookieName] ?? null;
-        } elseif ($mode === 'header') {
+        } else {
             $sessionId = $request->cookie[$cookieName] ?? null;
         }
         $sessionFactory = $this->container->get('session');
@@ -180,6 +219,33 @@ class HttpKernel
         $session->start();
 
         $request->session = $session;
-        return false;
+        return true;
+    }
+
+    /**
+     * @param Request $request
+     * @param ResponseInterface $response
+     * @param Cookies $cookies
+     * @return ResponseInterface $response
+     */
+    private function registerSessionShutdown(Request $request, ResponseInterface $response, Cookies $cookies)
+    {
+        if (!$this->container->has('session')) {
+            return $response;
+        }
+        /**
+         * @var $session SessionManager
+         */
+        $session = $request->session;
+        $options = $this->container->get('app.config')['session'] ?? [];
+        $mode = $options['mode'] ?? 'cookie';
+        if ($mode == 'header') {
+            $response = $response->withHeader($session->getName(), $session->getSessionId());
+        } else {
+            $cookies->set(
+                CookieAttributes::create( $session->getName(), $session->getSessionId(), $session->getExpire())
+            );
+        }
+        return $response;
     }
 }
