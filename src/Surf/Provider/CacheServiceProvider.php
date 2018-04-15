@@ -29,7 +29,6 @@ class CacheServiceProvider implements ServiceProviderInterface
         // TODO: Implement register() method.
 
         $pimple['cache.manager'] = function ($pimple) {
-
             /**
              * @var $pimple Application
              */

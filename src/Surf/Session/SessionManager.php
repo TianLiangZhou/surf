@@ -9,8 +9,6 @@
 namespace Surf\Session;
 
 
-use Surf\Server\Http\Cookie\CookieAttributes;
-
 class SessionManager
 {
     /**
@@ -61,15 +59,11 @@ class SessionManager
      */
     public function __construct(DriverInterface $driver, $sessionId = null, array $options = [])
     {
-        $this->driver = $driver;
-
         $this->options = $options;
-
-        $this->sessionId = $sessionId;
-
-        $this->sessionStorage = new SessionStorage();
-
         $this->setter();
+        $this->sessionId = $sessionId;
+        $this->sessionStorage = new SessionStorage();
+        $this->driver = $driver;
     }
 
     /**
@@ -131,6 +125,15 @@ class SessionManager
     public function get(string $key)
     {
         return $this->sessionStorage->get($key);
+    }
+
+    /**
+     * @param string $key
+     * @return bool
+     */
+    public function has(string $key)
+    {
+        return $this->sessionStorage->has($key);
     }
 
     /**
@@ -196,4 +199,11 @@ class SessionManager
         }
     }
 
+    /**
+     * @return null|DriverInterface
+     */
+    public function getDriver()
+    {
+        return $this->driver;
+    }
 }

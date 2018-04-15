@@ -59,37 +59,49 @@ class TcpServer extends Server
      */
     public function receive(SwooleServer $server, int $fd, int $reactorId, string $data)
     {
-        if ($this->protocol) {
-            $this->protocol->unpack($fd, $data);
-            if ($this->protocol->finish($fd)) {
-                $protocol = $this->protocol->protocol($fd);
-                if (empty($protocol)) {
-                    return $server->send($fd, 'ok, Protocol parse failed');
-                }
-                if (empty($protocol = $this->protocolCollector->get($protocol))) {
-                    return $server->send($fd, 'ok, Protocol collector undefined');
-                }
-                if (is_callable($protocol)) {
-                    $callback = $protocol;
-                } else {
-                    $class = $protocol;
-                    $action = 'index';
-                    if (strpos($protocol, ':') !== false) {
-                        list($class, $action) = explode(':', $protocol);
-                    }
-                    $callback = [new $class($this->container), $action];
-                }
-                $content = call_user_func(
-                    $callback,
-                    $this->protocol->body($fd),
-                    $fd
-                );
-                $this->protocol->clean($fd);
-                return $server->send($fd, $content);
-            }
-        } else {
+        if (!is_object($this->protocol)) {
             return $server->send($fd, 'ok, But undefined protocol');
         }
+        if (($response = $this->handle($fd, $data))) {
+            $server->send($fd, $response);
+        }
+    }
+
+    /**
+     * @param int $fd
+     * @param string $data
+     * @return string
+     */
+    public function handle(int $fd, string $data)
+    {
+        $this->protocol->unpack($fd, $data);
+        if ($this->protocol->finish($fd)) {
+            $protocol = $this->protocol->protocol($fd);
+            if (empty($protocol)) {
+                return 'ok, Protocol parse failed';
+            }
+            if (empty($protocol = $this->protocolCollector->get($protocol))) {
+                return 'ok, Protocol collector undefined';
+            }
+            if (is_callable($protocol)) {
+                $callback = $protocol;
+            } else {
+                $class = $protocol;
+                $action = 'index';
+                if (strpos($protocol, ':') !== false) {
+                    list($class, $action) = explode(':', $protocol);
+                }
+                $callback = [new $class($this->container), $action];
+            }
+            $content = call_user_func(
+                $callback,
+                $this->protocol->body($fd),
+                $fd
+            );
+            $this->protocol->clean($fd);
+            return $content;
+        }
+        return null;
     }
 
     /**
@@ -122,5 +134,25 @@ class TcpServer extends Server
     protected function managerStart(\Swoole\Server $server)
     {
         // TODO: Implement managerStart() method.
+    }
+
+    /**
+     * @param SwooleServer $server
+     * @param int $fd
+     * @param int $reactorId
+     */
+    public function connect(SwooleServer $server, int $fd, int $reactorId)
+    {
+
+    }
+
+    /**
+     * @param SwooleServer $server
+     * @param int $fd
+     * @param int $reactorId
+     */
+    public function close(SwooleServer $server, int $fd, int $reactorId)
+    {
+
     }
 }

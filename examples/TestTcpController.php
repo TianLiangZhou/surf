@@ -8,7 +8,9 @@
 
 namespace Surf\Examples;
 
-class TestTcpController extends \Surf\Mvc\Controller\TcpController
+use Surf\Mvc\Controller\TcpController;
+
+class TestTcpController extends TcpController
 {
     public function name($body)
     {

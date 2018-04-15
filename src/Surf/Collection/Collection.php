@@ -19,7 +19,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     /**
      * @var array
      */
-    protected $items = [];
+    private $items = [];
 
     /**
      * Collection constructor.
@@ -27,6 +27,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
      */
     public function __construct(array $items = [])
     {
+        $this->items = $items;
     }
 
     /**

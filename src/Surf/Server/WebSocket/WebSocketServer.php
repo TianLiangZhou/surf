@@ -32,6 +32,8 @@ class WebSocketServer extends Server
         $this->server->on('open', [$this, 'open']);
 
         $this->server->on('message', [$this, 'message']);
+
+        $this->server->on('close', [$this, 'close']);
     }
 
     /**
@@ -76,5 +78,15 @@ class WebSocketServer extends Server
     protected function managerStart(\Swoole\Server $server)
     {
         // TODO: Implement managerStart() method.
+    }
+
+    /**
+     * @param SwooleServer $server
+     * @param int $fd
+     * @param int $reactorId
+     */
+    public function close(SwooleServer $server, int $fd, int $reactorId)
+    {
+
     }
 }

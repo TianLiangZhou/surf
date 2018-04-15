@@ -8,7 +8,6 @@
 
 namespace Surf\Provider;
 
-
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Surf\Session\Driver\File;
@@ -50,10 +49,13 @@ class SessionServiceProvider implements ServiceProviderInterface
             if (is_string($class)) {
                 switch ($class) {
                     case 'redis':
-                        $driver = new Redis();
+                        if (!$pimple->has('redis')) {
+                            throw new \RuntimeException("Session redis Driver must injection `redis'");
+                        }
+                        $driver = new Redis($pimple->get('redis'), $options);
                         break;
                     default:
-                        $driver = new File();
+                        $driver = new File($options);
                 }
             }
             if (! ($driver instanceof DriverInterface)) {

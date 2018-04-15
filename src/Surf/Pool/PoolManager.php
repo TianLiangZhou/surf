@@ -102,7 +102,7 @@ class PoolManager
 
     /**
      * @param $poolName
-     * @return null|CacheConnectionPool|ConnectionPool|DatabaseConnectionPool
+     * @return Connection
      */
     protected function factory($poolName)
     {

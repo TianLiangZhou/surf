@@ -57,8 +57,8 @@ abstract class Server
         $this->server->on('start', [$this, 'onStart']);
         $this->server->on('managerStart', [$this, 'onManagerStart']);
         $this->server->on('workerStart', [$this, 'onWorkerStart']);
-        $this->server->on('task', [$this, 'task']);
-        $this->server->on('finish', [$this, 'finish']);
+        $this->server->on('task', [$this, 'onTask']);
+        $this->server->on('finish', [$this, 'onFinish']);
         $this->listen();
     }
 
@@ -138,7 +138,7 @@ abstract class Server
      * @param int $workerId
      * @param $data
      */
-    public function task(\Swoole\Server $server, int $taskId, int $workerId, $data)
+    public function onTask(\Swoole\Server $server, int $taskId, int $workerId, $data)
     {
     }
 
@@ -147,25 +147,16 @@ abstract class Server
      * @param int $taskId
      * @param $data
      */
-    public function finish(\Swoole\Server $server, int $taskId, $data)
+    public function onFinish(\Swoole\Server $server, int $taskId, $data)
     {
+
     }
 
     /**
-     * @param SwooleServer $server
-     * @param int $fd
-     * @param int $reactorId
+     * @return null|SwooleServer
      */
-    public function connect(SwooleServer $server, int $fd, int $reactorId)
+    public function getServer(): ?SwooleServer
     {
-    }
-
-    /**
-     * @param SwooleServer $server
-     * @param int $fd
-     * @param int $reactorId
-     */
-    public function close(SwooleServer $server, int $fd, int $reactorId)
-    {
+        return $this->server;
     }
 }

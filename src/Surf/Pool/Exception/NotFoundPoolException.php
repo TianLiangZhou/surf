@@ -8,8 +8,12 @@
 
 namespace Surf\Pool\Exception;
 
-use Exception;
+use Throwable;
 
-class NotFoundPoolException extends Exception
+class NotFoundPoolException extends PoolException
 {
+    public function __construct(string $message = "", int $code = 0, Throwable $previous = null)
+    {
+        parent::__construct($message, $code, $previous);
+    }
 }

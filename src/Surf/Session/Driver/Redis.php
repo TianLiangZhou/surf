@@ -8,10 +8,9 @@
 
 namespace Surf\Session\Driver;
 
-use Surf\Session\DriverInterface;
 use Surf\Session\SessionDriver;
 
-class Redis extends SessionDriver implements DriverInterface
+class Redis extends SessionDriver
 {
     private $redis = null;
 
@@ -19,8 +18,9 @@ class Redis extends SessionDriver implements DriverInterface
      * Redis constructor.
      * @param array $options
      */
-    public function __construct(array $options = [])
+    public function __construct(\Redis $redis, array $options = [])
     {
+        $this->redis = $redis;
         parent::__construct($options);
     }
 
@@ -57,6 +57,6 @@ class Redis extends SessionDriver implements DriverInterface
     public function save(string $id, $data)
     {
         // TODO: Implement save() method.
-        return $this->redis->set('sess:' . $id, serialize($data));
+        return $this->redis->setex('sess:' . $id, $this->getExpire(), serialize($data));
     }
 }

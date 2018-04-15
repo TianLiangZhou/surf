@@ -65,7 +65,12 @@ class HttpKernel
         } catch (\Exception $e) {
             $response = new HtmlResponse($e->getMessage(), 500);
         }
-        $this->finishResponse($sourceResponse, $response, $cookies, $request->server['request_time']);
+        $this->finishResponse(
+            $sourceResponse,
+            $response,
+            $cookies,
+            $request->server['request_time']
+        );
         return true;
     }
 
@@ -75,8 +80,12 @@ class HttpKernel
      * @param Cookies $cookies
      * @param int $timestamps 当前请求时间
      */
-    private function finishResponse(Response $sourceResponse, ResponseInterface $response, Cookies $cookies, int $timestamps)
-    {
+    private function finishResponse(
+        Response $sourceResponse,
+        ResponseInterface $response,
+        Cookies $cookies,
+        int $timestamps
+    ) {
         foreach ($cookies->getResponseCookies() as $name => $cookieAttributes) {
             /**
              * @var $cookieAttributes CookieAttributes
@@ -120,6 +129,9 @@ class HttpKernel
             } else {
                 $response = $this->getControllerResponse($attributes, $request, $cookies);
             }
+        }
+        if ($response === null) {
+            throw new \RuntimeException("Response must to string or implementation 'ResponseInterface' interface");
         }
         if (!($response instanceof ResponseInterface)) {
             $response = new HtmlResponse($response);
@@ -243,9 +255,10 @@ class HttpKernel
             $response = $response->withHeader($session->getName(), $session->getSessionId());
         } else {
             $cookies->set(
-                CookieAttributes::create( $session->getName(), $session->getSessionId(), $session->getExpire())
+                CookieAttributes::create($session->getName(), $session->getSessionId(), $session->getExpire())
             );
         }
+        $session->save();
         return $response;
     }
 }

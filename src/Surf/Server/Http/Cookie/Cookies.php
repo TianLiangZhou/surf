@@ -8,7 +8,6 @@
 
 namespace Surf\Server\Http\Cookie;
 
-
 /**
  * Class Cookies
  * @package Surf\Server\Http\Cookie

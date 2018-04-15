@@ -42,4 +42,14 @@ class TestController extends HttpController
         $table .= '</table>';
         return $table;
     }
+
+    /**
+     *
+     */
+    public function session()
+    {
+        $this->request->session->set('TEST_SESSION', 'Hello Session');
+
+        return "Session";
+    }
 }

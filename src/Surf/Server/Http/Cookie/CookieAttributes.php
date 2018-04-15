@@ -8,7 +8,6 @@
 
 namespace Surf\Server\Http\Cookie;
 
-
 final class CookieAttributes
 {
     /* ------------------- */

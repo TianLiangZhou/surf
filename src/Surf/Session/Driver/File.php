@@ -8,11 +8,9 @@
 
 namespace Surf\Session\Driver;
 
-
-use Surf\Session\DriverInterface;
 use Surf\Session\SessionDriver;
 
-class File extends SessionDriver implements DriverInterface
+class File extends SessionDriver
 {
 
     /**
@@ -28,7 +26,7 @@ class File extends SessionDriver implements DriverInterface
     {
         parent::__construct($options);
 
-        if (isset($this->options['save_path']) && $this->options['save_path']) {
+        if (isset($this->options['save_path']) && $this->options['save_path'] && is_dir($this->options['save_path'])) {
             $this->savePath = $this->options['save_path'];
         }
     }
@@ -53,17 +51,21 @@ class File extends SessionDriver implements DriverInterface
     {
         // TODO: Implement read() method.
         $file = rtrim($this->savePath, '/\\') . DIRECTORY_SEPARATOR . 'sess_' . $id;
+        $session = new \ArrayIterator();
         if (file_exists($file) && is_readable($file)) {
             $handle = fopen($file, 'r');
             if (flock($handle, LOCK_EX)) {
                 $session = fread($handle, filesize($file));
                 flock($handle, LOCK_UN);
-                fclose($handle);
-                return unserialize($session);
+                $time = time();
+                list($ttl, $data) = unserialize($session);
+                if ($time <= $ttl) {
+                    $session = $data;
+                }
             }
             fclose($handle);
         }
-        return new \ArrayIterator();
+        return $session;
     }
 
     /**
@@ -82,13 +84,12 @@ class File extends SessionDriver implements DriverInterface
             $handle = fopen($file, 'r+');
             if (flock($handle, LOCK_EX)) {
                 ftruncate($handle, 0);
-                fwrite($handle, serialize($data));
+                fwrite($handle, serialize([$this->getExpire() + time(), $data]));
                 fflush($handle);
                 flock($handle, LOCK_UN);
-                fclose($handle);
-                return true;
             }
             fclose($handle);
+            return true;
         }
         return false;
     }

@@ -8,7 +8,6 @@
 
 namespace Surf\Session;
 
-
 use Surf\Collection\Collection;
 
 class SessionStorage extends Collection
@@ -28,7 +27,16 @@ class SessionStorage extends Collection
      */
     public function get(string $key)
     {
-        $this->offsetGet($key);
+        return $this->offsetGet($key);
+    }
+
+    /**
+     * @param string $key
+     * @return bool
+     */
+    public function has(string $key)
+    {
+        return $this->offsetExists($key);
     }
 
     /**

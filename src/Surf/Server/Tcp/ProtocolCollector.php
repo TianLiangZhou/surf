@@ -23,7 +23,7 @@ class ProtocolCollector extends Collection
      */
     public function add(string $name, $callback)
     {
-        $this->offsetSet($name, $callback);
+        $this->offsetSet($this->currentGroupPrefix . $name, $callback);
     }
 
     /**
@@ -46,5 +46,14 @@ class ProtocolCollector extends Collection
     public function get(string $name)
     {
         return $this->offsetGet($name);
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function has(string $name)
+    {
+        return $this->offsetExists($name);
     }
 }

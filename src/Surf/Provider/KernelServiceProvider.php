@@ -39,12 +39,5 @@ class KernelServiceProvider implements ServiceProviderInterface
              */
             return new HttpKernel($pimple['dispatcher'], $pimple->getContainer());
         };
-        $pimple['tcp.kernel']  = function ($pimple) {
-            return null;
-        };
-
-        $pimple['webSocket.kernel'] = function () {
-            return null;
-        };
     }
 }
