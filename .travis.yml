@@ -11,7 +11,7 @@ before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS test;USE test;CREATE TABLE user (`id` int not null, `name` varchar(30) not null); INSERT INTO `user` (`id`, `name`) VALUES (1, "meshell");'
 
 install:
-  - tests/travis.phpredis
+  - tests/travis.phpredis.sh
   - redis-cli info |grep version
 
 before_script:
