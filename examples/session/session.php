@@ -18,6 +18,7 @@ $app->addGet('/', function () {
     return "Hello world";
 });
 $app->addGet('/test', \Surf\Examples\TestController::class . ':index');
+$app->addGet('/session_cookie', \Surf\Examples\TestController::class . ':sessionCookie');
 try {
     $app->run();
 } catch (\Surf\Exception\ServerNotFoundException $e) {

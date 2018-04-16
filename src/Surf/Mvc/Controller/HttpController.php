@@ -10,6 +10,7 @@ namespace Surf\Mvc\Controller;
 
 use Surf\Mvc\Controller;
 use Surf\Server\Http\Cookie\Cookies;
+use Surf\Session\SessionManager;
 use Swoole\Http\Request;
 
 class HttpController extends Controller
@@ -24,6 +25,12 @@ class HttpController extends Controller
      * @var Cookies
      */
     protected $cookies = null;
+
+
+    /**
+     * @var null|SessionManager;
+     */
+    protected $session = null;
 
     /**
      * @return null
@@ -55,5 +62,21 @@ class HttpController extends Controller
     public function setCookies(Cookies $cookies): void
     {
         $this->cookies = $cookies;
+    }
+
+    /**
+     * @return null|SessionManager
+     */
+    public function getSession(): ?SessionManager
+    {
+        return $this->session;
+    }
+
+    /**
+     * @param null|SessionManager $session
+     */
+    public function setSession(?SessionManager $session): void
+    {
+        $this->session = $session;
     }
 }

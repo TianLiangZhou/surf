@@ -181,6 +181,9 @@ class HttpKernel
             }
             if ($class instanceof HttpController) {
                 $class->setRequest($request);
+                if (property_exists($request, 'session')) {
+                    $class->setSession($request->session);
+                }
                 $class->setCookies($cookies);
             }
             if (!isset($this->controllers[$hash])) {

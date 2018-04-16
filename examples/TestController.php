@@ -10,6 +10,7 @@ namespace Surf\Examples;
 
 use Surf\Mvc\Controller\HttpController;
 use Surf\Pool\PoolManager;
+use Surf\Server\Http\Cookie\CookieAttributes;
 
 class TestController extends HttpController
 {
@@ -51,5 +52,16 @@ class TestController extends HttpController
         $this->request->session->set('TEST_SESSION', 'Hello Session');
 
         return "Session";
+    }
+
+    /**
+     * 
+     */
+    public function sessionCookie()
+    {
+        $this->request->session->set('SESSION_USER', 'Hello Session');
+
+        $this->cookies->set(CookieAttributes::create('TEST_COOKIE', 'Hello Cookie', time() + 7200));
+        return $this->session->get('SESSION_USER');
     }
 }

@@ -151,9 +151,23 @@ return [
             'options'  => [],
         ],
     ],
+    'cache' => [
+        'default' => [
+            'driver' => 'redis',
+            'host'   => '127.0.0.1',
+            'port'   => 6379,
+            // 'prefix' => 'SURF:'
+            // 'auth' => 'password'
+        ],
+    ],
     'pool' => [
         'interval' => 100, //心跳检测时间，以毫秒为单位
         'database' => [
+            'default' => [
+                'start_number' => 10 //默认开启
+            ],
+        ],
+        'cache' => [
             'default' => [
                 'start_number' => 10 //默认开启
             ],
@@ -177,13 +191,69 @@ $app->register(new \Surf\Provider\PoolServiceProvider());
 */
 $pool = $this->container->get('pool'); //获取连接池管理对象
 /**
-* @var $pdo \Surf\Pool\Connection
+* @var $pdo \Surf\Pool\Connection 获取一个数据库对象
 */
 $pdo  = $pool->pop('database.default'); //从database.default池子中获取当前对象
 
+/**
+* 获取一个缓存对象 需要注册 
+* $app->register(new \Surf\Provider\CacheServiceProvider());
+*/
+$redis = $pool->pop('cache.default'); //从cache.default池子中获取当前对象
 ```
 
 查看事例[pool](examples/TestController.php)
+
+
+#### Usage `Session` and `Cookie`
+
+`session` 和 `cookie` 在`web`开发中是经常需要使用的保存一些登录信息, 登录状态等等.
+
+在`匿名函数`中使用. 在回调函数时候框架会自动将`路由变量`, `request`, `cookies` 这几个参数填充到函数.
+
+```php
+
+use Surf\Server\Http\Cookie\CookieAttributes;
+
+$app->addGet('/', function($routeVars, Request $request, Cookies $cookies) {
+
+    $session = $request->session; //获取session 对象
+    $session->set('userInfo', ['id' => 1]);
+    //使用cookie, 传入一个CookieAttributes对象
+    $cookies->set(CookieAttributes::create('name', 'value', 0));
+});
+
+```
+
+在`HttpController`中使用.
+
+```php
+
+use Surf\Server\Http\Cookie\CookieAttributes;
+
+$app->addGet('/', 'SessionController:index');
+
+
+...
+
+class SessionController extends HttpController
+{
+    ...
+
+    public function index($routeVars)
+    {
+        $session = $this->request->session; // or $this->session; 获取session 对象
+        $session->set('userInfo', ['id' => 1]);
+        //使用cookie       
+        $this->cookies->set(CookieAttributes::create('name', 'value', 0));
+    }
+}
+
+```
+
+查看事例[session](examples/session/session.php)
+
+
 
 ## License
 
