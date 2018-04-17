@@ -36,11 +36,6 @@ class HttpKernel
     private $container = null;
 
     /**
-     * @var array
-     */
-    private $controllers = [];
-
-    /**
      * HttpKernel constructor.
      * @param EventDispatcherInterface $dispatcher
      */
@@ -174,8 +169,7 @@ class HttpKernel
             if (!class_exists($controller)) {
                 throw new \Exception("Can not find the controller '$controller'");
             }
-            $hash = md5($controller);
-            $class = $this->controllers[$hash] ?? (new $controller($this->container));
+            $class = new $controller($this->container);
             if (!method_exists($class, $method)) {
                 throw new \Exception("Can not find the controller method '$method'");
             }
@@ -185,9 +179,6 @@ class HttpKernel
                     $class->setSession($request->session);
                 }
                 $class->setCookies($cookies);
-            }
-            if (!isset($this->controllers[$hash])) {
-                $this->controllers[$hash] = $class;
             }
             $callback = [$class, $method];
             if (method_exists($class, 'initialize')) {
