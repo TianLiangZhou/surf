@@ -13,6 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 use Surf\Mvc\Controller\HttpController;
 use Surf\Server\Http\Cookie\CookieAttributes;
 use Surf\Server\Http\Cookie\Cookies;
+use Surf\Server\RedisConstant;
 use Surf\Session\SessionManager;
 use Surf\Event\GetResponseEvent;
 use Surf\Exception\MethodNotAllowedException;
@@ -169,7 +170,12 @@ class HttpKernel
             if (!class_exists($controller)) {
                 throw new \Exception("Can not find the controller '$controller'");
             }
-            $class = new $controller($this->container);
+            $workerId = 0;
+            if ($this->container->has('redis') && isset($request->fd)) {
+                $redis = $this->container->get('redis');
+                $workerId = (int) $redis->hGet(RedisConstant::FULL_FD_WORKER, $request->fd);
+            }
+            $class = new $controller($this->container, $workerId);
             if (!method_exists($class, $method)) {
                 throw new \Exception("Can not find the controller method '$method'");
             }

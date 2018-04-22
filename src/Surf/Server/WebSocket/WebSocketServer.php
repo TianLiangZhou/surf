@@ -33,7 +33,6 @@ class WebSocketServer extends Server
 
         $this->server->on('message', [$this, 'message']);
 
-        $this->server->on('close', [$this, 'close']);
     }
 
     /**
@@ -85,8 +84,16 @@ class WebSocketServer extends Server
      * @param int $fd
      * @param int $reactorId
      */
-    public function close(SwooleServer $server, int $fd, int $reactorId)
+    protected function close(\Swoole\Server $server, int $fd, int $reactorId)
     {
 
+    }
+
+    /**
+     *
+     */
+    protected function connect(\Swoole\Server $server, int $fd, int $reactorId)
+    {
+        // TODO: Implement connect() method.
     }
 }

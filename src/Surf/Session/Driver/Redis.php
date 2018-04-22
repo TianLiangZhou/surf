@@ -12,13 +12,16 @@ use Surf\Session\SessionDriver;
 
 class Redis extends SessionDriver
 {
+    /**
+     * @var null | Redis | \Redis
+     */
     private $redis = null;
 
     /**
      * Redis constructor.
      * @param array $options
      */
-    public function __construct(\Redis $redis, array $options = [])
+    public function __construct($redis, array $options = [])
     {
         $this->redis = $redis;
         parent::__construct($options);

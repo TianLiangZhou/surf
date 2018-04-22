@@ -42,12 +42,7 @@ class TcpServer extends Server
     protected function listen()
     {
         // TODO: Implement listen() method.
-
-        $this->server->on('connect', [$this, 'connect']);
-
         $this->server->on('receive', [$this, 'receive']);
-
-        $this->server->on('close', [$this, 'close']);
     }
 
 
@@ -62,7 +57,7 @@ class TcpServer extends Server
         if (!is_object($this->protocol)) {
             return $server->send($fd, 'ok, But undefined protocol');
         }
-        if (($response = $this->handle($fd, $data))) {
+        if (($response = $this->handle($fd, $data, $server->worker_id))) {
             $server->send($fd, $response);
         }
     }
@@ -72,7 +67,7 @@ class TcpServer extends Server
      * @param string $data
      * @return string
      */
-    public function handle(int $fd, string $data)
+    public function handle(int $fd, string $data, int $workerId = 0)
     {
         $this->protocol->unpack($fd, $data);
         if ($this->protocol->finish($fd)) {
@@ -91,7 +86,7 @@ class TcpServer extends Server
                 if (strpos($protocol, ':') !== false) {
                     list($class, $action) = explode(':', $protocol);
                 }
-                $callback = [new $class($this->container), $action];
+                $callback = [new $class($this->container, $workerId), $action];
             }
             $content = call_user_func(
                 $callback,

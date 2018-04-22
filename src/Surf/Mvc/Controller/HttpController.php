@@ -43,7 +43,7 @@ class HttpController extends Controller
     /**
      * @param null $request
      */
-    public function setRequest(Request $request): void
+    public function setRequest(Request $request)
     {
         $this->request = $request;
     }
@@ -51,7 +51,7 @@ class HttpController extends Controller
     /**
      * @return Cookies
      */
-    public function getCookies(): Cookies
+    public function getCookies()
     {
         return $this->cookies;
     }
@@ -59,7 +59,7 @@ class HttpController extends Controller
     /**
      * @param Cookies $cookies
      */
-    public function setCookies(Cookies $cookies): void
+    public function setCookies(Cookies $cookies)
     {
         $this->cookies = $cookies;
     }
@@ -67,7 +67,7 @@ class HttpController extends Controller
     /**
      * @return null|SessionManager
      */
-    public function getSession(): ?SessionManager
+    public function getSession()
     {
         return $this->session;
     }
@@ -75,7 +75,7 @@ class HttpController extends Controller
     /**
      * @param null|SessionManager $session
      */
-    public function setSession(?SessionManager $session): void
+    public function setSession(SessionManager $session)
     {
         $this->session = $session;
     }

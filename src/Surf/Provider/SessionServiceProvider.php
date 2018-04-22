@@ -34,10 +34,7 @@ class SessionServiceProvider implements ServiceProviderInterface
             /**
              * @var $pimple \Pimple\Psr11\Container
              */
-            $options = $pimple->has('app.config')
-                ? ($pimple->get('app.config')['session'] ?? [])
-                : [];
-
+            $options = $pimple->get('server.config')['session'] ?? [];
             $class = isset($options['driver']) ? $options['driver'] : 'file';
             $driver = null;
             if (is_callable($driver)) {

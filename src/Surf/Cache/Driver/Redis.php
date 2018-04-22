@@ -16,7 +16,6 @@ use Surf\Cache\Driver;
  */
 class Redis extends Driver
 {
-    private $redis = null;
 
     /**
      * Redis constructor.
@@ -26,19 +25,9 @@ class Redis extends Driver
     {
         parent::__construct($options);
 
-        $this->redis = self::getConnection();
+        $this->driver = $this->getConnectionResolver();
     }
 
-    /**
-     * @return \Redis
-     */
-    protected function getRedis()
-    {
-        if (is_callable($this->redis)) {
-            $this->redis = call_user_func($this->redis, $this->options);
-        }
-        return $this->redis;
-    }
 
     /**
      * @param $key
@@ -47,7 +36,7 @@ class Redis extends Driver
     public function get($key)
     {
         // TODO: Implement get() method.
-        return $this->getRedis()->get($this->prefix . $key);
+        return $this->getConnection()->get($this->prefix . $key);
     }
 
     /**
@@ -59,7 +48,7 @@ class Redis extends Driver
     public function set($key, $data, $ttl = 86400)
     {
         // TODO: Implement set() method.
-        return $this->getRedis()->setex($this->prefix . $key, $ttl, $data);
+        return $this->getConnection()->setex($this->prefix . $key, $ttl, $data);
     }
 
     /**
@@ -69,7 +58,7 @@ class Redis extends Driver
     public function delete($key)
     {
         // TODO: Implement delete() method.
-        return $this->getRedis()->del($this->prefix . $key);
+        return $this->getConnection()->del($this->prefix . $key);
     }
 
     /**
@@ -79,21 +68,36 @@ class Redis extends Driver
     public function exists($key)
     {
         // TODO: Implement exists() method.
-        return $this->getRedis()->exists($this->prefix . $key);
+        return $this->getConnection()->exists($this->prefix . $key);
     }
 
     /**
      * @return \Closure
      */
-    private static function getConnection()
+    protected function getConnectionResolver()
     {
         return function($options) {
             $redis = new \Redis();
-            $redis->connect($options['host'], $options['port'] ?? 6379, $options['timeout'] ?? 0);
+            $redis->connect($options['host'] ?? '127.0.0.1', $options['port'] ?? 6379, $options['timeout'] ?? 0);
             if (isset($options['auth'])) {
                 $redis->auth($options['auth']);
             }
             return $redis;
         };
+    }
+
+    protected function getConnection()
+    {
+        // TODO: Implement isConnection() method.
+        /**
+         * @var $redis \Redis
+         */
+        $redis = $this->getDriver();
+
+        if ($redis->isConnected()) {
+            return $redis;
+        }
+        $this->driver = $this->getConnectionResolver();
+        return $this->getDriver();
     }
 }

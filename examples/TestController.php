@@ -11,6 +11,7 @@ namespace Surf\Examples;
 use Surf\Mvc\Controller\HttpController;
 use Surf\Pool\PoolManager;
 use Surf\Server\Http\Cookie\CookieAttributes;
+use Surf\Task\PushTaskHandle;
 
 class TestController extends HttpController
 {
@@ -63,5 +64,13 @@ class TestController extends HttpController
 
         $this->cookies->set(CookieAttributes::create('TEST_COOKIE', 'Hello Cookie', time() + 7200));
         return $this->session->get('SESSION_USER');
+    }
+
+    public function taskTest()
+    {
+        $taskId = $this->task('push all message', PushTaskHandle::class);
+        $status = $this->syncTask('sync push all message', PushTaskHandle::class);
+        var_dump($status);
+        return "task push id:" . $taskId;
     }
 }

@@ -63,4 +63,20 @@ class HttpServer extends Server
     {
         // TODO: Implement managerStart() method.
     }
+
+    /**
+     *
+     */
+    protected function connect(\Swoole\Server $server, int $fd, int $reactorId)
+    {
+        // TODO: Implement connect() method.
+    }
+
+    /**
+     *
+     */
+    protected function close(\Swoole\Server $server, int $fd, int $reactorId)
+    {
+        // TODO: Implement close() method.
+    }
 }
