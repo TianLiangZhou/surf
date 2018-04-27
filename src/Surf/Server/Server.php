@@ -12,6 +12,8 @@ use Pimple\Psr11\Container;
 use Surf\Cache\Driver\Redis;
 use Surf\Pool\PoolManager;
 use Surf\Task\TaskHandle;
+use Surf\Ticker\Ticker;
+use Surf\Ticker\TickerInterface;
 use Swoole\Server as SwooleServer;
 use Surf\Task\TaskHandleInterface;
 
@@ -34,6 +36,11 @@ abstract class Server
     ];
 
     /**
+     * 应用名称
+     * @var mixed|string
+     */
+    protected $name = 'surf';
+    /**
      * @var null|Container
      */
     protected $container = null;
@@ -42,6 +49,13 @@ abstract class Server
      * @var array
      */
     protected $task = [
+
+    ];
+
+    /**
+     * @var array
+     */
+    protected $ticker = [
 
     ];
     /**
@@ -53,6 +67,7 @@ abstract class Server
     {
         $this->container = $container;
         $this->defaultConfig = array_merge($this->defaultConfig, $config);
+        $this->name = $this->defaultConfig['name'] ?? 'surf';
         $this->init();
         $this->bootstrap();
     }
@@ -121,7 +136,7 @@ abstract class Server
     abstract protected function close(\Swoole\Server $server, int $fd, int $reactorId);
 
     /**
-     *
+     * 启动服务
      */
     public function run()
     {
@@ -135,7 +150,7 @@ abstract class Server
     public function onStart(\Swoole\Server $server)
     {
         $this->start($server);
-        swoole_set_process_name('surf:master');
+        swoole_set_process_name($this->name. ':master');
     }
 
     /**
@@ -145,7 +160,7 @@ abstract class Server
     public function onManagerStart(\Swoole\Server $server)
     {
         $this->managerStart($server);
-        swoole_set_process_name('surf:manager');
+        swoole_set_process_name($this->name . ':manager');
     }
 
     /**
@@ -163,13 +178,24 @@ abstract class Server
                 $pool = $this->container->get('pool');
                 $pool && $pool->tick();
             }
+            if ($this->ticker) {
+                foreach ($this->ticker as $mill => $ticker) {
+                    /**
+                     * @var $ticker Ticker
+                     */
+                    $ticker->setContainer($this->container);
+                    $ticker->setServer($server);
+                    $ticker->setInterval($mill);
+                    $server->tick($mill, [$ticker, 'execute']);
+                }
+            }
         }
         $this->workerStart($server, $workerId);
         $workerNumber = $this->defaultConfig['setting']['worker_num'] ?? 1;
         if ($workerId >= $workerNumber) {
-            swoole_set_process_name('surf:task');
+            swoole_set_process_name($this->name . ':task');
         } else {
-            swoole_set_process_name('surf:worker');
+            swoole_set_process_name($this->name . ':worker');
         }
     }
 
@@ -271,17 +297,33 @@ abstract class Server
                 $logger = $this->container->get('logger');
                 $logger->info($message);
             } else {
-                $logFile = $this->defaultConfig['setting']['log_file'] ?? '/tmp/swoole.task.log';
-                $format = sprintf(
-                    '[%s] INFO: %s',
-                    date('Y-m-d H:i:s'),
-                    $message
-                );
-                file_put_contents($logFile, $format);
+                $logFile = $this->defaultConfig['setting']['log_file'] ?? '/tmp/'. $this->name .'.log';
+                $message = sprintf('[%s] INFO: %s', date('Y-m-d H:i:s'), $message);
+                error_log($message, 3, $logFile);
             }
         }
     }
 
+    /**
+     * @param int $mill
+     * @param string $className
+     * @return bool
+     */
+    public function addTicker(int $mill, string $className)
+    {
+        if (!class_exists($className)) {
+            return false;
+        }
+
+        $tick = new $className;
+        if (!($tick instanceof TickerInterface)) {
+            unset($tick);
+            return false;
+        }
+        $this->ticker[$mill] = $tick;
+
+        return true;
+    }
     /**
      * @return null|SwooleServer
      */

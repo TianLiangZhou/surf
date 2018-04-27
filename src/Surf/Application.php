@@ -213,6 +213,24 @@ class Application extends Container
     }
 
     /**
+     * @param int $mill
+     * @param string $class
+     * @return $this
+     */
+    public function addTicker(int $mill, string $class)
+    {
+        if (!$this->isBoot) {
+
+            /**
+             * @var $server Server
+             */
+            $server = $this->get('server');
+
+            $server->addTicker($mill, $class);
+        }
+        return $this;
+    }
+    /**
      * Start to service
      * @throws ServerNotFoundException
      */

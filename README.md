@@ -253,7 +253,46 @@ class SessionController extends HttpController
 
 查看事例[session](examples/session/session.php)
 
+#### 任务
 
+在控制器中使用`$this->task()`, 这个是异步, 想使用同步可以`$this->syncTask()`.
+
+```php
+
+    ...
+    public function taskTest()
+    {
+        $taskId = $this->task('push all message worker' . $this->workerId, PushTaskHandle::class);
+        //$status = $this->syncTask('sync push all message', PushTaskHandle::class);
+        //var_dump($status);
+        return "task push id:" . $taskId . ", workId:" . $this->workerId;
+    }
+
+```
+
+查看事例[task](examples/task/task.php)
+
+#### 全局定时器
+
+在有些业务中我们可能会有这样的需求，比如每隔两小时需要读取下订单数.但你也可以用`crontab`实现. 
+相同时间的定时器会被最后一次添加的定时器覆盖,定时器时间单位为毫秒.
+
+
+```php
+
+...
+
+$app->addTicker(100, \Surf\Examples\HeartbeatTicker::class);
+
+try {
+    $app->run();
+} catch (\Surf\Exception\ServerNotFoundException $e) {
+
+}
+
+```
+
+查看事例[ticker](examples/ticker/ticker.php)
 
 ## License
 
