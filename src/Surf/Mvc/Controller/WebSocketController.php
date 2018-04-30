@@ -9,7 +9,20 @@
 namespace Surf\Mvc\Controller;
 
 use Surf\Mvc\Controller;
+use Swoole\WebSocket\Frame;
 
 class WebSocketController extends Controller
 {
+    /**
+     * @var null | Frame
+     */
+    protected $frame = null;
+
+    /**
+     * @param null|Frame $frame
+     */
+    public function setFrame(Frame $frame)
+    {
+        $this->frame = $frame;
+    }
 }

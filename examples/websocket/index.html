@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+<script>
+
+    var socket = new WebSocket('ws://192.168.56.101:9527');
+
+    socket.onopen = function() {
+        socket.send(JSON.stringify({
+            "protocol": "user.info",
+            "body": {userId: 123456}
+        }));
+    };
+    socket.onmessage = function(event) {
+        var data = event.data;
+        if (data) data = JSON.parse(data);
+        alert(data.body.username);
+    };
+
+</script>
+</body>
+</html>

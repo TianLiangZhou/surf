@@ -14,7 +14,7 @@ Installation
 使用[Composer](https://getcomposer.org/)来安装框架.
 
 ```shell
-$ composer require meshell/surf "^1.0"
+$ composer require meshell/surf "^1.0.6"
 ```
 
 Usage
