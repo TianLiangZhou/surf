@@ -68,6 +68,7 @@ abstract class Server
         $this->container = $container;
         $this->defaultConfig = array_merge($this->defaultConfig, $config);
         $this->name = $this->defaultConfig['name'] ?? 'surf';
+        $this->signal();
         $this->init();
         $this->bootstrap();
     }
@@ -88,6 +89,42 @@ abstract class Server
         $this->server->on('finish', [$this, 'onFinish']);
         $this->server->on('close', [$this, 'onClose']);
         $this->listen();
+    }
+
+    /**
+     * 使用信号处理器
+     * @return void
+     */
+    protected function signal()
+    {
+        if (extension_loaded('pcntl')) {
+            if (function_exists('pcntl_async_signals')) {
+                pcntl_async_signals(true);
+            }
+
+            $callback = [$this, 'signalHandler'];
+            pcntl_signal(SIGINT, $callback);
+            pcntl_signal(SIGTERM, $callback);
+            pcntl_signal_dispatch();
+        }
+    }
+
+    /**
+     * 再直接kill 的时候 把redis的key删除
+     * @param $signal
+     * @return void
+     */
+    public function signalHandler($signal)
+    {
+        if ($this->container->has('redis')) {
+            /**
+             * @var $redis \Redis
+             */
+            $redis = $this->container->get('redis');
+            $redis->del(RedisConstant::FULL_CONNECT_FD);
+            $redis->del(RedisConstant::FULL_FD_WORKER);
+            $redis->del(RedisConstant::TASK_FINISH_WORKER);
+        }
     }
 
     /**

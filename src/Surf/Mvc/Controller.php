@@ -34,6 +34,10 @@ abstract class Controller
      */
     protected $workerId = 0;
 
+    /**
+     * @var bool 是否主动关闭连接
+     */
+    protected $isClose = false;
 
     /**
      * @var null|\Swoole\Server
@@ -103,5 +107,21 @@ abstract class Controller
     public function defer(callable $callback)
     {
         $this->swooleServer->defer($callback);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isClose(): bool
+    {
+        return $this->isClose;
+    }
+
+    /**
+     * @param bool $isClose
+     */
+    public function setIsClose(bool $isClose)
+    {
+        $this->isClose = $isClose;
     }
 }

@@ -91,9 +91,21 @@ class WebSocketServer extends Server
             $callback = [$instance, $action];
         }
         $content = call_user_func($callback, $json->body);
-        return $server->push($frame->fd, json_encode([
+        if (isset($json->requestId)) {
+            $content['requestId'] = $json->requestId;
+        }
+        $server->push($frame->fd, json_encode([
             'code' => 0, 'message' => 'success', 'body' => $content
         ]));
+        /**
+         * 主动断开
+         */
+        if (isset($instance) && $instance instanceof WebSocketController) {
+            if ($instance->isClose()) {
+                $server->close($frame->fd);
+            }
+        }
+        return true;
     }
 
     /**

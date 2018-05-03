@@ -8,6 +8,7 @@
 
 namespace Surf\Server\Tcp;
 
+use Surf\Mvc\Controller\TcpController;
 use Surf\Server\Server;
 use Swoole\Server as SwooleServer;
 
@@ -57,15 +58,17 @@ class TcpServer extends Server
         if (!is_object($this->protocol)) {
             return $server->send($fd, 'ok, But undefined protocol');
         }
-        if (($response = $this->handle($fd, $data, $server->worker_id))) {
+        list($response, $close) = $this->handle($fd, $data, $server->worker_id);
+        if ($response) {
             $server->send($fd, $response);
         }
+        $close && $server->close($fd);
     }
 
     /**
      * @param int $fd
      * @param string $data
-     * @return string
+     * @return array
      */
     public function handle(int $fd, string $data, int $workerId = 0)
     {
@@ -73,10 +76,10 @@ class TcpServer extends Server
         if ($this->protocol->finish($fd)) {
             $protocol = $this->protocol->protocol($fd);
             if (empty($protocol)) {
-                return 'ok, Protocol parse failed';
+                return [ 'ok, Protocol parse failed', false ];
             }
             if (empty($protocol = $this->protocolCollector->get($protocol))) {
-                return 'ok, Protocol collector undefined';
+                return [ 'ok, Protocol collector undefined', false ];
             }
             if (is_callable($protocol)) {
                 $callback = $protocol;
@@ -86,17 +89,18 @@ class TcpServer extends Server
                 if (strpos($protocol, ':') !== false) {
                     list($class, $action) = explode(':', $protocol);
                 }
-                $callback = [new $class($this->container, $workerId), $action];
+                $instance = new $class($this->container, $workerId);
+                $callback = [$instance, $action];
             }
-            $content = call_user_func(
-                $callback,
-                $this->protocol->body($fd),
-                $fd
-            );
+            $content = call_user_func($callback, $this->protocol->body($fd), $fd);
             $this->protocol->clean($fd);
-            return $content;
+            $close = false;
+            if (isset($instance) && $instance instanceof TcpController) {
+                $close = $instance->isClose();
+            }
+            return [$content,  $close];
         }
-        return null;
+        return [null, false];
     }
 
     /**
