@@ -38,8 +38,12 @@ class PushTaskHandle extends TaskHandle
                 $connections = $this->server->connections;
             }
         }
+        $method = 'send';
+        if ($this->server instanceof \Swoole\WebSocket\Server) {
+            $method = 'push';
+        }
         foreach ($connections as $fd) {
-            $this->server->send($fd, $content);
+            $this->server->$method($fd, $content);
         }
         return true;
     }
