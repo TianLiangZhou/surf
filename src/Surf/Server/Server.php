@@ -10,12 +10,16 @@ namespace Surf\Server;
 
 use Pimple\Psr11\Container;
 use Surf\Cache\Driver\Redis;
+use Surf\Event\ServerCloseEvent;
+use Surf\Event\ServerConnectEvent;
+use Surf\Event\ServerEvent;
 use Surf\Pool\PoolManager;
 use Surf\Task\TaskHandle;
 use Surf\Ticker\Ticker;
 use Surf\Ticker\TickerInterface;
 use Swoole\Server as SwooleServer;
 use Surf\Task\TaskHandleInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 abstract class Server
 {
@@ -58,6 +62,11 @@ abstract class Server
     protected $ticker = [
 
     ];
+
+    /**
+     * @var null|EventDispatcher
+     */
+    protected $dispatcher = null;
     /**
      * Server constructor.
      * @param Container $container
@@ -68,6 +77,7 @@ abstract class Server
         $this->container = $container;
         $this->defaultConfig = array_merge($this->defaultConfig, $config);
         $this->name = $this->defaultConfig['name'] ?? 'surf';
+        $this->dispatcher = $this->container->get('dispatcher');
         $this->signal();
         $this->init();
         $this->bootstrap();
@@ -226,6 +236,7 @@ abstract class Server
                     $server->tick($mill, [$ticker, 'execute']);
                 }
             }
+            $this->dispatcher->dispatch(Events::SERVER_MANAGER, new ServerEvent($server));
         }
         $this->workerStart($server, $workerId);
         $workerNumber = $this->defaultConfig['setting']['worker_num'] ?? 1;
@@ -251,8 +262,8 @@ abstract class Server
             $redis->sAdd(RedisConstant::FULL_CONNECT_FD, $fd);
             $redis->hSet(RedisConstant::FULL_FD_WORKER, $fd, $server->worker_id);
         }
-
         $this->connect($server, $fd, $reactorId);
+        $this->dispatcher->dispatch(Events::SERVER_CONNECT, new ServerConnectEvent($server, $fd));
     }
 
     /**
@@ -272,6 +283,7 @@ abstract class Server
             $redis->hDel(RedisConstant::FULL_FD_WORKER, $fd);
         }
         $this->close($server, $fd, $reactorId);
+        $this->dispatcher->dispatch(Events::SERVER_CLOSE, new ServerCloseEvent($server, $fd));
     }
 
     /**

@@ -13,16 +13,23 @@ use Pimple\Psr11\Container as Psr11Container;
 use Pimple\ServiceProviderInterface;
 use Surf\Api\BootableProviderInterface;
 use Surf\Api\EventListenerProviderInterface;
+use Surf\Cache\Driver\Redis;
 use Surf\Exception\ServerNotFoundException;
+use Surf\Pool\Pool;
 use Surf\Provider\DatabaseServiceProvider;
 use Surf\Provider\KernelServiceProvider;
 use Surf\Provider\RouterServiceProvider;
 use Surf\Provider\ServerServiceProvider;
 use Surf\Server\Server;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class Application
  * @package Surf
+ * @property EventDispatcher $dispatcher
+ * @property Server $server
+ * @property Redis $redis
+ * @property Pool $pool
  */
 class Application extends Container
 {
@@ -227,6 +234,25 @@ class Application extends Container
             $server = $this->get('server');
 
             $server->addTicker($mill, $class);
+        }
+        return $this;
+    }
+
+    /**
+     * 添加事件定义
+     * @param $eventName
+     * @param $eventListener
+     * @param int $priority
+     * @return $this
+     * @throws \Exception
+     */
+    public function on($eventName, $eventListener, int $priority = 0)
+    {
+        if (!is_callable($eventListener)) {
+            throw new \Exception("$eventListener not callable");
+        }
+        if (!$this->isBoot) {
+            $this->dispatcher->addListener($eventName, $eventListener, $priority);
         }
         return $this;
     }

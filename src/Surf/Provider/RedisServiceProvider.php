@@ -31,7 +31,7 @@ class RedisServiceProvider implements ServiceProviderInterface
 
         /**
          * @param $pimple
-         * @return Redis
+         * @return \Surf\Cache\DriverInterface
          */
         $pimple['redis'] = function($pimple) {
             /**

@@ -589,7 +589,7 @@ class ApplicationTest extends TestCase
         $swooleServer = $server->getServer();
         $server->onWorkerStart($swooleServer, 1);
         $hex = pack('A64NA*', "name=user.name;format=json", strlen($message), $message);
-        $response = $server->handle(1, $hex);
+        list($response, $close) = $server->handle(1, $hex);
         $this->assertInternalType('string', $response);
 
         $this->assertEquals('my name is meShell, my age is 18, My job is an engineer', $response);
