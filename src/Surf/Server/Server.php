@@ -236,7 +236,9 @@ abstract class Server
                     $server->tick($mill, [$ticker, 'execute']);
                 }
             }
-            $this->dispatcher->dispatch(Events::SERVER_MANAGER, new ServerEvent($server));
+            $event = new ServerEvent($server);
+            $event->setContainer($this->container);
+            $this->dispatcher->dispatch(Events::SERVER_MANAGER, $event);
         }
         $this->workerStart($server, $workerId);
         $workerNumber = $this->defaultConfig['setting']['worker_num'] ?? 1;
@@ -263,7 +265,9 @@ abstract class Server
             $redis->hSet(RedisConstant::FULL_FD_WORKER, $fd, $server->worker_id);
         }
         $this->connect($server, $fd, $reactorId);
-        $this->dispatcher->dispatch(Events::SERVER_CONNECT, new ServerConnectEvent($server, $fd));
+        $event = new ServerConnectEvent($server, $fd);
+        $event->setContainer($this->container);
+        $this->dispatcher->dispatch(Events::SERVER_CONNECT, $event);
     }
 
     /**
@@ -283,6 +287,8 @@ abstract class Server
             $redis->hDel(RedisConstant::FULL_FD_WORKER, $fd);
         }
         $this->close($server, $fd, $reactorId);
+        $event = new ServerCloseEvent($server, $fd);
+        $event->setContainer($this->container);
         $this->dispatcher->dispatch(Events::SERVER_CLOSE, new ServerCloseEvent($server, $fd));
     }
 

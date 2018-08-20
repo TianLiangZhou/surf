@@ -252,7 +252,7 @@ class Application extends Container
             throw new \Exception("$eventListener not callable");
         }
         if (!$this->isBoot) {
-            $this->dispatcher->addListener($eventName, $eventListener, $priority);
+            $this->get('dispatcher')->addListener($eventName, $eventListener, $priority);
         }
         return $this;
     }
