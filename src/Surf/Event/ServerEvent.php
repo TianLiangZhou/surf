@@ -65,5 +65,29 @@ class ServerEvent extends Event
         $this->container = $container;
     }
 
+    /**
+     * @return null|Server
+     */
+    public function getServer(): Server
+    {
+        return $this->server;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFd(): int
+    {
+        return $this->fd;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWorkerId(): int
+    {
+        return $this->workerId;
+    }
+
 
 }
