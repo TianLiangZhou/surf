@@ -9,6 +9,7 @@
 namespace Surf\Event;
 
 
+use Psr\Container\ContainerInterface;
 use Swoole\Server;
 use Symfony\Component\EventDispatcher\Event;
 
@@ -28,6 +29,11 @@ class ServerEvent extends Event
      * @var int
      */
     protected $workerId = 0;
+
+    /**
+     * @var null | ContainerInterface
+     */
+    protected $container = null;
     /**
      * ServerEvent constructor.
      * @param Server $server
@@ -42,4 +48,22 @@ class ServerEvent extends Event
 
         $this->workerId = $workerId;
     }
+
+    /**
+     * @return null | ContainerInterface
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
+     * @param null $container
+     */
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
+
 }
