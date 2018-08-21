@@ -16,7 +16,7 @@ install:
   - redis-cli info |grep version
 
 before_script:
-  - yes | pecl install swoole
+  - yes | pecl install -f swoole-2.2.0
   #- echo 'extension = "swoole.so"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - composer install
 

@@ -12,7 +12,7 @@
   ],
   "require": {
     "php": ">=7",
-    "ext-swoole": "~4.0",
+    "ext-swoole": "~2.0",
     "nikic/fast-route": "^1.2",
     "pimple/pimple": "^3.0",
     "symfony/event-dispatcher": "^4.0",
